@@ -112,10 +112,12 @@ export default {
           if (responseData.token) {
             authStore.setToken(responseData.token)
           }
+          authStore.setTokenreftime(new Date().setMinutes(new Date().getMinutes() + 10)) //10 min
           const authindex = {
             user: input.value.username,
             authorized: true,
-            token: authStore.token
+            token: authStore.token,
+            tokenreftime: authStore.tokenreftime
           }
           cryptoService.saveData(authindex, 'userindex')
           router.replace({ name: 'dashboard' })

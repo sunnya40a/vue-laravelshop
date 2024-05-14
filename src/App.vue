@@ -1,4 +1,4 @@
-// App.vue
+<!-- App.vue -->
 <script>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -11,31 +11,28 @@ export default {
     NavBar
   },
   setup() {
-    // Router instance for navigation
     const router = useRouter()
-
-    // Access the authentication store
     const authStore = useAuthStore()
-
-    // Flag to control visibility of the navbar
     const showNavbar = ref(authStore.isAuthenticated)
-
-    // Timer ID for inactivity logout
     let inactivityTimerId = ref(null)
+    let refreshtokenTimerId = ref(null)
 
-    // Reset inactivity timer
     const resetInactivityTimer = () => {
       if (inactivityTimerId.value) {
         clearTimeout(inactivityTimerId.value)
       }
-      // Set timeout for logout after 5 minutes of inactivity
-      inactivityTimerId.value = setTimeout(logoutCall, 60000 * 2) // 2 minute
+      inactivityTimerId.value = setTimeout(logoutCall, 60000 * 3) // 3 minutes
     }
 
-    // Logout user function
+    const resetRefreshTokenTimer = () => {
+      if (refreshtokenTimerId.value) {
+        clearTimeout(refreshtokenTimerId.value)
+      }
+      refreshtokenTimerId.value = setTimeout(refreshtokentimeCheck, 60000 * 10) // 10 minutes
+    }
+
     const logoutCall = () => {
       console.log('logout function called from App.vue')
-      // Check if user is authenticated
       if (authStore.isAuthenticated) {
         router.push('/logout')
         LocalCleanup()
@@ -45,34 +42,60 @@ export default {
       }
     }
 
-    // Add event listeners for inactivity detection
+    const refreshtokentimeCheck = async () => {
+      if (authStore.isAuthenticated) {
+        const reftime = authStore.tokenreftime
+        const currentTime = new Date().getTime()
+        if (reftime && reftime - currentTime <= 9.5 * 60 * 1000) {
+          console.log('Refreshing token...')
+          await refreshcsrfToken()
+          authStore.setTokenreftime(new Date().setMinutes(new Date().getMinutes() + 10)) // 10 minutes
+        } else {
+          console.log('Token refresh check skipped.')
+        }
+      } else {
+        console.log('User is not logged in!!!')
+      }
+      resetRefreshTokenTimer()
+    }
+
+    const refreshcsrfToken = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+          method: 'GET',
+          credentials: 'include' // Ensure cookies are sent
+        })
+        if (!response.ok) {
+          throw new Error('Failed to fetch CSRF token')
+        }
+      } catch (error) {
+        console.error('Failed to fetch CSRF token:', error)
+        throw new Error('Failed to fetch CSRF token')
+      }
+    }
+
     onMounted(() => {
       window.addEventListener('mousemove', resetInactivityTimer)
       window.addEventListener('keydown', resetInactivityTimer)
       window.addEventListener('touchstart', resetInactivityTimer)
-      // Start the timer initially
       resetInactivityTimer()
+      resetRefreshTokenTimer()
     })
 
-    // Remove event listeners on component unmount
     onUnmounted(() => {
       window.removeEventListener('mousemove', resetInactivityTimer)
       window.removeEventListener('keydown', resetInactivityTimer)
       window.removeEventListener('touchstart', resetInactivityTimer)
       clearTimeout(inactivityTimerId.value)
+      clearTimeout(refreshtokenTimerId.value)
     })
 
-    // Watch for authentication changes
-    // Update the showNavbar flag when authentication status changes
     watch(
       () => authStore.isAuthenticated,
       (newVal) => {
         showNavbar.value = newVal
       }
     )
-
-    // Refresh token logic
-    //const { refreshToken } = RefreshToken()
 
     return {
       showNavbar
@@ -144,4 +167,3 @@ button {
   }
 }
 </style>
-./components/NavBar.vue

@@ -9,11 +9,13 @@ export function LocalCleanup() {
     userData.authorized = false
     userData.user = null
     userData.token = null //
+    userData.tokenreftime = null
     cryptoService.saveData(userData, 'userindex')
   }
   authStore.setUsername('')
   authStore.setAuthorized(false)
   authStore.setToken('')
+  authStore.setTokenreftime(0)
   localStorage.removeItem('userindex', 'True')
 }
 

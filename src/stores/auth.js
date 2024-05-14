@@ -5,7 +5,8 @@ export const useAuthStore = defineStore('auth', {
     // Initial state of the store
     username: '',
     authorized: false,
-    token: ''
+    token: '',
+    tokenreftime: new Date()
   }),
   getters: {
     // Getter functions to access state properties
@@ -17,6 +18,9 @@ export const useAuthStore = defineStore('auth', {
     },
     getToken(state) {
       return state.token
+    },
+    getTokenreftime(state) {
+      return state.tokenreftime
     }
   },
   actions: {
@@ -29,6 +33,9 @@ export const useAuthStore = defineStore('auth', {
     },
     setToken(acc_token) {
       this.token = acc_token
+    },
+    setTokenreftime(time) {
+      this.tokenreftime = time
     }
   }
 })

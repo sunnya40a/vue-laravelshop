@@ -14,6 +14,7 @@ export default defineConfig({
   },
   build: {
     outDir: './src/frontend',
-    assetsDir: 'assets'
+    assetsDir: 'assets',
+    sourcemap: true // Ensure source maps are enabled
   }
 })
