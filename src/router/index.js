@@ -77,18 +77,12 @@ function authenticatedGuard(to, from, next) {
     authStore.setUsername(userData.user)
     authStore.setAuthorized(userData.authorized)
     authStore.setToken(userData.token)
-    authStore.setRefToken(userData.refreshToken)
-    authStore.setCtoken(userData.ctoken)
-    authStore.setRefTime(userData.refreshTime)
   } else {
     // Handle case where data could not be retrieved
     // Update Vuex store with default values
     authStore.setUsername('')
     authStore.setAuthorized(false)
     authStore.setToken('')
-    authStore.setRefToken('')
-    authStore.setCtoken('')
-    authStore.setRefTime(0)
   }
 
   // Check if the route requires authentication

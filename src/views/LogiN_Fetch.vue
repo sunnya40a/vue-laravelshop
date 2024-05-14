@@ -55,51 +55,46 @@ export default {
   emits: ['vnode-unmounted'],
 
   setup(_, { emit, vnode }) {
+    // Define reactive variables using ref()
     const input = ref({
       username: '',
       password: ''
     })
     const error = ref('')
     const isPasswordVisible = ref(false)
+    // Access the router
     const router = useRouter()
+    // Access the auth store
     const authStore = useAuthStore()
 
+    // Function to toggle password visibility
     const togglePasswordVisibility = () => {
       isPasswordVisible.value = !isPasswordVisible.value
     }
 
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
-          method: 'GET',
-          credentials: 'include' // Ensure cookies are sent
-        })
-        if (!response.ok) {
-          throw new Error('Failed to fetch CSRF token')
-        }
-      } catch (error) {
-        console.error('Failed to fetch CSRF token:', error)
-        throw new Error('Failed to fetch CSRF token')
-      }
-    }
-
+    // Function to handle login
     const login = async () => {
-      error.value = "Couldn't login"
+      error.value = "Couldn't login" // Reset error message
+
+      // Check if refresh token exists
+      if (!authStore.reftoken) {
+        authStore.setToken(null)
+      }
+      const mytoken = authStore.token
 
       try {
-        // Fetch CSRF token first
-        await fetchCsrfToken()
-
+        // Send a POST request to the login endpoint
         const response = await fetch('http://localhost:8000/api/login', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...(mytoken && { Authorization: mytoken })
           },
           body: JSON.stringify({
-            name: input.value.username,
+            username: input.value.username,
             password: input.value.password
           }),
-          credentials: 'include' // Include credentials (cookies)
+          credentials: 'include'
         })
 
         if (!response.ok) {
@@ -108,33 +103,43 @@ export default {
 
         const responseData = await response.json()
 
+        // Handle successful login
         if (response.status >= 200 && response.status < 300) {
+          // Prepare user information for local storage
           if (responseData.token) {
             authStore.setToken(responseData.token)
           }
+          // Prepare user index for local storage
           const authindex = {
             user: input.value.username,
             authorized: true,
             token: authStore.token
           }
+          // Save user information to local storage
           cryptoService.saveData(authindex, 'userindex')
+          // Redirect to dashboard
           router.replace({ name: 'dashboard' })
         } else {
+          // Handle authentication failure
           console.error('Authentication failed. Status code:', response.status)
           error.value = 'Authentication failed. Please check your credentials.'
         }
       } catch (error) {
+        // Handle errors during authentication
         console.error('An error occurred during authentication:', error)
         error.value = 'An error occurred during authentication. Please try again.'
       }
     }
 
+    // Cleanup function
     onBeforeUnmount(() => {
+      // Check if vnode is defined before emitting the event
       if (vnode) {
         emit('vnode-unmounted')
       }
     })
 
+    // Return reactive variables and functions to be used in the template
     return {
       input,
       error,

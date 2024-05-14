@@ -16,12 +16,11 @@ export default {
     const logout = async () => {
       try {
         isLoggingOut.value = true
-        const response = await fetch('http://localhost:8000/logoutapi', {
+        const response = await fetch('http://localhost:8000/api/logout', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            authorization: authstore.token, // Use the stored token
-            'X-CSRF-Token': authstore.ctoken
+            authorization: authstore.token // Use the stored token
           },
           credentials: 'include'
         })

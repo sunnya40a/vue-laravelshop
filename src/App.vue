@@ -4,7 +4,6 @@ import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { LocalCleanup } from '@/service/helper'
-//import NavBar from '@/components/NavBar.vue'
 import NavBar from '@/components/NavBar.vue'
 
 export default {
