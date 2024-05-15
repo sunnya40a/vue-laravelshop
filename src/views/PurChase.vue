@@ -16,25 +16,24 @@ const authstore = useAuthStore()
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:8000/purchase/list', {
+    const response = await fetch('http://localhost:8000/api/purchase/list', {
       method: 'GET',
-      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        authorization: authstore.token, // Use the stored token
-        'X-CSRF-Token': authstore.ctoken
-      }
+        authorization: authstore.token // Use the stored token
+      },
+      credentials: 'include'
     })
+
+    const responseData = await response.json()
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const responseData = await response.json()
-
     if (isMounted.value) {
-      if (responseData.Data) {
-        items.value = responseData.Data
+      if (responseData.data) {
+        items.value = responseData.data
         // Modify the Pdate field for each item using date-fns
         items.value = items.value.map((item) => {
           try {

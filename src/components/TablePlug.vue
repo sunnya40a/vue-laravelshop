@@ -75,12 +75,12 @@
         <tr v-for="item in sortedData" :key="item.PO">
           <td>{{ item.PO }}</td>
           <td>{{ item.Pdate }}</td>
-          <td>{{ item.Item_list }}</td>
-          <td>{{ item.Description }}</td>
-          <td>{{ item.Category }}</td>
-          <td>{{ item.Qty }}</td>
-          <td>{{ item.Price }}</td>
-          <td>{{ item.User }}</td>
+          <td>{{ item.item_list }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.qty }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.user }}</td>
           <td><a href="#">Details</a></td>
         </tr>
       </tbody>
@@ -151,13 +151,12 @@ const sortedData = computed(() => {
 const fetchData = async () => {
   try {
     const response = await fetch(
-      `http://localhost:8000/purchase/list?page=${currentPage.value}&limit=${limit.value}&search=${searchTerm.value}&datef=${fromDate.value}&datee=${toDate.value}&sortBy=${sortByField.value}&sortOrder=${sortDirection.value}`,
+      `http://localhost:8000/api/purchase/list?page=${currentPage.value}&limit=${limit.value}&search=${searchTerm.value}&datef=${fromDate.value}&datee=${toDate.value}&sortBy=${sortByField.value}&sortOrder=${sortDirection.value}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          authorization: authstore.token, // Use the stored token
-          'X-CSRF-Token': authstore.ctoken
+          authorization: authstore.token // Use the stored token
         },
         credentials: 'include'
       }
@@ -165,14 +164,15 @@ const fetchData = async () => {
 
     const responseData = await response.json()
 
-    if (responseData.Data !== null) {
+    if (responseData.data !== null) {
       // Check if responseData.Data is not null
       // Format Pdate to YY/MM/DD format
-      responseData.Data.forEach((item) => {
+
+      responseData.data.forEach((item) => {
         item.Pdate = format(parseISO(item.Pdate), 'dd-MMM-yy')
       })
 
-      data.value = responseData.Data
+      data.value = responseData.data
     } else {
       data.value = []
     }

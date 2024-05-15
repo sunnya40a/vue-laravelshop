@@ -54,7 +54,7 @@ export default {
           console.log('Token refresh check skipped.')
         }
       } else {
-        console.log('User is not logged in!!!')
+        console.log('User is not logged in!!! to renew token')
       }
       resetRefreshTokenTimer()
     }

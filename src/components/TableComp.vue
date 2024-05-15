@@ -28,43 +28,43 @@
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Item_list')" class="sortable">
-            Item List<span v-if="sortByField === 'Item_list'">
+          <th @click="sortBy('item_list')" class="sortable">
+            Item List<span v-if="sortByField === 'item_list'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Description')" class="sortable">
-            Description<span v-if="sortByField === 'Description'">
+          <th @click="sortBy('description')" class="sortable">
+            Description<span v-if="sortByField === 'description'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Category')" class="sortable">
-            Category<span v-if="sortByField === 'Category'">
+          <th @click="sortBy('category')" class="sortable">
+            Category<span v-if="sortByField === 'category'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Qty')" class="sortable">
-            Qty<span v-if="sortByField === 'Qty'">
+          <th @click="sortBy('qty')" class="sortable">
+            Qty<span v-if="sortByField === 'qty'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Price')" class="sortable">
-            Price<span v-if="sortByField === 'Price'">
+          <th @click="sortBy('price')" class="sortable">
+            Price<span v-if="sortByField === 'price'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('User')" class="sortable">
-            User<span v-if="sortByField === 'User'">
+          <th @click="sortBy('user')" class="sortable">
+            User<span v-if="sortByField === 'user'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
@@ -77,12 +77,12 @@
         <tr v-for="item in sortedData" :key="item.PO">
           <td>{{ item.PO }}</td>
           <td>{{ item.Pdate }}</td>
-          <td>{{ item.Item_list }}</td>
-          <td>{{ item.Description }}</td>
-          <td>{{ item.Category }}</td>
-          <td>{{ item.Qty }}</td>
-          <td>{{ item.Price }}</td>
-          <td>{{ item.User }}</td>
+          <td>{{ item.item_list }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.qty }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ item.user }}</td>
           <td><a href="#">Details</a></td>
         </tr>
       </tbody>
@@ -155,19 +155,18 @@ export default {
     async fetchData() {
       try {
         const response = await fetch(
-          `http://localhost:8000/purchase/list?page=${this.currentPage}&limit=${this.limit}&search=${this.searchQuery}&sortBy=${this.sortByField}&sortOrder=${this.sortDirection}`,
+          `http://localhost:8000/api/purchase/list?page=${this.currentPage}&limit=${this.limit}&search=${this.searchQuery}&sortBy=${this.sortByField}&sortOrder=${this.sortDirection}`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
-              authorization: this.authstore.token, // Use the stored token
-              'X-CSRF-Token': this.authstore.ctoken
+              authorization: this.authstore.token // Use the stored token
             },
             credentials: 'include'
           }
         )
         const responseData = await response.json()
-        this.data = responseData.Data
+        this.data = responseData.data
         this.totalRecords = responseData.TotalRecords
         this.totalPageCount = Math.ceil(responseData.TotalRecords / this.limit)
       } catch (error) {
