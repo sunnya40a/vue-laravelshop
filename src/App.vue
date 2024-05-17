@@ -5,10 +5,12 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { LocalCleanup } from '@/service/helper'
 import NavBar from '@/components/NavBar.vue'
+import NotiFication from '@/components/NotiFication.vue'
 
 export default {
   components: {
-    NavBar
+    NavBar,
+    NotiFication
   },
   setup() {
     const router = useRouter()
@@ -111,6 +113,7 @@ export default {
       <NavBar v-if="showNavbar" />
     </div>
     <div>
+      <NotiFication />
       <RouterView />
     </div>
   </div>

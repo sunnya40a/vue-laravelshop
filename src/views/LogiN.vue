@@ -40,7 +40,7 @@
       </div>
     </form>
     <button type="button" @click="login">Login</button>
-    <p v-if="error" class="error-message">{{ error }}</p>
+    <!-- <p v-if="error" class="error-message">{{ error }}</p> -->
   </div>
 </template>
 
@@ -49,6 +49,7 @@ import { ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { cryptoService } from '@/service/security'
+import useNotification from '@/service/notificationService'
 
 export default {
   name: 'LogiN',
@@ -59,10 +60,10 @@ export default {
       username: '',
       password: ''
     })
-    const error = ref('')
     const isPasswordVisible = ref(false)
     const router = useRouter()
     const authStore = useAuthStore()
+    const { notify } = useNotification()
 
     const togglePasswordVisibility = () => {
       isPasswordVisible.value = !isPasswordVisible.value
@@ -75,17 +76,16 @@ export default {
           credentials: 'include' // Ensure cookies are sent
         })
         if (!response.ok) {
+          notify('Failed to fetch CSRF token.', 'error')
           throw new Error('Failed to fetch CSRF token')
         }
       } catch (error) {
-        console.error('Failed to fetch CSRF token:', error)
+        notify("Couldn't communite with server.", 'error')
         throw new Error('Failed to fetch CSRF token')
       }
     }
 
     const login = async () => {
-      error.value = "Couldn't login"
-
       try {
         // Fetch CSRF token first
         await fetchCsrfToken()
@@ -103,6 +103,7 @@ export default {
         })
 
         if (!response.ok) {
+          notify('Authentication failed. Please check your credentials.', 'error')
           throw new Error(`HTTP error! status: ${response.status}`)
         }
 
@@ -123,11 +124,10 @@ export default {
           router.replace({ name: 'dashboard' })
         } else {
           console.error('Authentication failed. Status code:', response.status)
-          error.value = 'Authentication failed. Please check your credentials.'
         }
       } catch (error) {
         console.error('An error occurred during authentication:', error)
-        error.value = 'An error occurred during authentication. Please try again.'
+        notify(error, 'error')
       }
     }
 
@@ -139,7 +139,6 @@ export default {
 
     return {
       input,
-      error,
       isPasswordVisible,
       authStore,
       togglePasswordVisibility,

@@ -31,10 +31,6 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="vendor">Supplier:</label>
-        <input id="vendor" v-model="purchase.vendor" type="text" required />
-      </div>
-      <div class="form-group">
         <label for="description">Description:</label>
         <textarea id="description" v-model="purchase.description" readonly required></textarea>
       </div>
@@ -55,7 +51,6 @@
         <input id="price" v-model="purchase.price" type="number" required />
       </div>
       <button type="submit">Save</button>
-      <button type="cancel">Cancel</button>
     </form>
     <p v-if="feedbackMessage">{{ feedbackMessage }}</p>
   </div>
@@ -73,7 +68,6 @@ const { categories, fetchCategories } = categoriesStore
 const items = ref([])
 const searchText = ref('')
 const showItemList = ref(false)
-const feedbackMessage = ref('')
 
 const fetchItems = async () => {
   try {
@@ -81,7 +75,7 @@ const fetchItems = async () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authStore.token
+        Authorization: `Bearer ${authStore.token}`
       },
       credentials: 'include'
     })
@@ -109,7 +103,7 @@ onMounted(() => {
 const purchase = ref({
   PO: 0,
   Pdate: '',
-  vendor: 'Chhesko Pvt. Ltd.',
+  vendor: '',
   item_list: '',
   description: '',
   qty: 0,
@@ -117,6 +111,8 @@ const purchase = ref({
   category: '',
   price: 0
 })
+
+const feedbackMessage = ref('')
 
 const handleSearch = () => {
   showItemList.value = true
@@ -146,47 +142,6 @@ const filteredItems = computed(() => {
       item.description.toLowerCase().includes(search)
   )
 })
-
-const savePurchase = async () => {
-  try {
-    let response = await fetch(
-      `http://localhost:8000/api/purchase/newpo?Pdate=${purchase.value.Pdate}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authStore.token
-        },
-        credentials: 'include'
-      }
-    )
-    if (!response.ok) {
-      throw new Error('Failed to get PO number')
-    }
-    let data = await response.json()
-    console.log(data)
-    purchase.value.PO = data.newPO
-
-    response = await fetch('http://localhost:8000/api/purchase/save', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authStore.token
-      },
-      credentials: 'include',
-      body: JSON.stringify(purchase.value)
-    })
-    if (!response.ok) {
-      throw new Error('Failed to save purchase')
-    }
-    data = await response.json()
-    console.log(data)
-    feedbackMessage.value = 'Purchase saved successfully!'
-  } catch (error) {
-    console.error('Error saving purchase:', error)
-    feedbackMessage.value = 'Error saving purchase. Please try again.'
-  }
-}
 </script>
 
 <style scoped lang="scss">
