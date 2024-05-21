@@ -40,7 +40,7 @@
       </div>
     </form>
     <button type="button" @click="login">Login</button>
-    <p v-if="error" class="error-message">{{ error }}</p>
+    <!-- <p v-if="error" class="error-message">{{ error }}</p> -->
   </div>
 </template>
 
@@ -49,102 +49,96 @@ import { ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { cryptoService } from '@/service/security'
+import useNotification from '@/service/notificationService'
+import.meta.env.VITE_API_URL
+import axios from 'axios'
 
 export default {
   name: 'LogiN',
   emits: ['vnode-unmounted'],
-
   setup(_, { emit, vnode }) {
-    // Define reactive variables using ref()
     const input = ref({
       username: '',
       password: ''
     })
-    const error = ref('')
     const isPasswordVisible = ref(false)
-    // Access the router
     const router = useRouter()
-    // Access the auth store
     const authStore = useAuthStore()
+    const { notify } = useNotification()
+    const siteurl = import.meta.env.VITE_API_URL
 
-    // Function to toggle password visibility
     const togglePasswordVisibility = () => {
       isPasswordVisible.value = !isPasswordVisible.value
     }
-
-    // Function to handle login
-    const login = async () => {
-      error.value = "Couldn't login" // Reset error message
-
-      // Check if refresh token exists
-      if (!authStore.reftoken) {
-        authStore.setToken(null)
-      }
-      const mytoken = authStore.token
-
+    const fetchCsrfToken = async () => {
       try {
-        // Send a POST request to the login endpoint
-        const response = await fetch('http://localhost:8000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(mytoken && { Authorization: mytoken })
-          },
-          body: JSON.stringify({
-            username: input.value.username,
-            password: input.value.password
-          }),
-          credentials: 'include'
+        const response = await axios.get(`${siteurl}/sanctum/csrf-cookie`, {
+          withCredentials: true // Ensure cookies are sent
         })
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const responseData = await response.json()
-
-        // Handle successful login
-        if (response.status >= 200 && response.status < 300) {
-          // Prepare user information for local storage
-          if (responseData.token) {
-            authStore.setToken(responseData.token)
-          }
-          // Prepare user index for local storage
-          const authindex = {
-            user: input.value.username,
-            authorized: true,
-            token: authStore.token
-          }
-          // Save user information to local storage
-          cryptoService.saveData(authindex, 'userindex')
-          // Redirect to dashboard
-          router.replace({ name: 'dashboard' })
-        } else {
-          // Handle authentication failure
-          console.error('Authentication failed. Status code:', response.status)
-          error.value = 'Authentication failed. Please check your credentials.'
+        if (response.status !== 204) {
+          notify('Failed to fetch CSRF token.', 'error')
+          throw new Error('Failed to fetch CSRF token')
         }
       } catch (error) {
-        // Handle errors during authentication
-        console.error('An error occurred during authentication:', error)
-        error.value = 'An error occurred during authentication. Please try again.'
+        notify("Couldn't communicate with server.", 'error')
+        throw new Error('Failed to fetch CSRF token')
       }
     }
 
-    // Cleanup function
+    const login = async () => {
+      try {
+        // Fetch CSRF token first
+        await fetchCsrfToken()
+
+        const response = await axios.post(
+          `${siteurl}/api/login`,
+          {
+            name: input.value.username,
+            password: input.value.password
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            withCredentials: true // Include credentials (cookies)
+          }
+        )
+
+        const responseData = response.data
+
+        if (response.status >= 200 && response.status < 300) {
+          if (responseData.token) {
+            authStore.setToken(responseData.token)
+          }
+          authStore.setTokenreftime(new Date().setMinutes(new Date().getMinutes() + 10)) //10 min
+          const authindex = {
+            user: input.value.username,
+            authorized: true,
+            token: authStore.token,
+            tokenreftime: authStore.tokenreftime
+          }
+          cryptoService.saveData(authindex, 'userindex')
+          router.replace({ name: 'dashboard' })
+        } else {
+          notify('Authentication failed. Please check your credentials.', 'error')
+          console.error('Authentication failed. Status code:', response.status)
+        }
+      } catch (error) {
+        notify('An error occurred during authentication.', 'error')
+        console.error('An error occurred during authentication:', error)
+      }
+    }
+
     onBeforeUnmount(() => {
-      // Check if vnode is defined before emitting the event
       if (vnode) {
         emit('vnode-unmounted')
       }
     })
 
-    // Return reactive variables and functions to be used in the template
     return {
       input,
-      error,
       isPasswordVisible,
-      authStore,
       togglePasswordVisibility,
       login
     }

@@ -98,102 +98,111 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Pagination from '@/components/PaginatioN.vue'
 import { useAuthStore } from '@/stores/auth'
+import { ref, computed, watch, onMounted } from 'vue'
+import axios from 'axios'
 
-export default {
-  components: {
-    Pagination
-  },
-  data() {
-    return {
-      data: null,
-      currentPage: 1,
-      totalPageCount: 1,
-      limit: 20,
-      totalRecords: 0,
-      sortByField: 'PO', // Default sorting field
-      sortDirection: 'asc', // Default sorting direction
-      searchQuery: '', // Initialize search query
-      authstore: useAuthStore()
-    }
-  },
-  computed: {
-    filteredData() {
-      if (!this.data) return null
+const siteurl = import.meta.env.VITE_API_URL
 
-      // If no search query, return all data
-      if (!this.searchQuery) return this.data
+const currentPage = ref(1)
+const limit = ref(20)
+const searchQuery = ref('')
+const sortByField = ref('PO')
+const sortDirection = ref('asc')
+const authstore = useAuthStore()
 
-      // Filter entire dataset based on search query
-      return this.data.filter((item) => {
-        // Filter logic: you can customize this based on your requirements
-        return Object.values(item).some((val) => {
-          return String(val).toLowerCase().includes(this.searchQuery.toLowerCase())
-        })
-      })
-    },
-    sortedData() {
-      if (!this.filteredData) return null
-      let sorted = this.filteredData.slice()
-      if (this.sortByField) {
-        sorted.sort((a, b) => {
-          let modifier = this.sortDirection === 'desc' ? -1 : 1
-          if (a[this.sortByField] < b[this.sortByField]) return -1 * modifier
-          if (a[this.sortByField] > b[this.sortByField]) return 1 * modifier
-          return 0
-        })
-      }
-      return sorted
-    }
-  },
-  mounted() {
-    this.fetchData()
-  },
-  methods: {
-    async fetchData() {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/api/purchase/list?page=${this.currentPage}&limit=${this.limit}&search=${this.searchQuery}&sortBy=${this.sortByField}&sortOrder=${this.sortDirection}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              authorization: this.authstore.token // Use the stored token
-            },
-            credentials: 'include'
-          }
-        )
-        const responseData = await response.json()
-        this.data = responseData.data
-        this.totalRecords = responseData.TotalRecords
-        this.totalPageCount = Math.ceil(responseData.TotalRecords / this.limit)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    },
-    handlePageChange(pageNumber) {
-      this.currentPage = pageNumber
-      this.fetchData()
-    },
-    handlePerPageChange(perPage) {
-      this.limit = perPage
-      this.currentPage = 1
-      this.fetchData()
-    },
-    handleSearchChange() {
-      this.currentPage = 1
-      this.fetchData()
-    },
+let data = ref(null)
+let totalRecords = ref(0)
+let totalPageCount = ref(1)
 
-    sortBy(field) {
-      this.sortByField = field
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc'
-      this.fetchData()
-    }
+const fetchData = async () => {
+  try {
+    const response = await axios.get(`${siteurl}/api/purchase/list`, {
+      params: {
+        page: currentPage.value,
+        limit: limit.value,
+        search: searchQuery.value,
+        sortBy: sortByField.value,
+        sortOrder: sortDirection.value
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authstore.token // Use the stored token
+      },
+      withCredentials: true // Include credentials (cookies)
+    })
+
+    const responseData = response.data
+    data.value = responseData.data
+    totalRecords.value = responseData.TotalRecords
+    totalPageCount.value = Math.ceil(responseData.TotalRecords / limit.value)
+  } catch (error) {
+    console.error('Error fetching data:', error)
   }
 }
+
+const handlePageChange = (pageNumber) => {
+  currentPage.value = pageNumber
+  fetchData()
+}
+
+const handlePerPageChange = (perPage) => {
+  limit.value = perPage
+  currentPage.value = 1
+  fetchData()
+}
+
+const handleSearchChange = () => {
+  currentPage.value = 1
+  fetchData()
+}
+
+const sortBy = (field) => {
+  sortByField.value = field
+  sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  fetchData()
+}
+
+// Fetch data on component mount
+onMounted(fetchData)
+
+// Watch for changes in currentPage, limit, or searchQuery
+watch([currentPage, limit, searchQuery], () => {
+  fetchData()
+})
+
+// Computed property for filteredData
+const filteredData = computed(() => {
+  if (!data.value) return null
+
+  // If no search query, return all data
+  if (!searchQuery.value) return data.value
+
+  // Filter entire dataset based on search query
+  return data.value.filter((item) => {
+    // Filter logic: customize based on your requirements
+    return Object.values(item).some((val) => {
+      return String(val).toLowerCase().includes(searchQuery.value.toLowerCase())
+    })
+  })
+})
+
+// Computed property for sortedData
+const sortedData = computed(() => {
+  if (!filteredData.value) return null
+  let sorted = filteredData.value.slice()
+  if (sortByField.value) {
+    sorted.sort((a, b) => {
+      let modifier = sortDirection.value === 'desc' ? -1 : 1
+      if (a[sortByField.value] < b[sortByField.value]) return -1 * modifier
+      if (a[sortByField.value] > b[sortByField.value]) return 1 * modifier
+      return 0
+    })
+  }
+  return sorted
+})
 </script>
 
 <style lang="scss" scoped>

@@ -57,7 +57,6 @@
       <button type="submit">Save</button>
       <button type="cancel">Cancel</button>
     </form>
-    <p v-if="feedbackMessage">{{ feedbackMessage }}</p>
   </div>
 </template>
 
@@ -65,31 +64,35 @@
 import { ref, onMounted, computed } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
+import useNotification from '@/service/notificationService'
+import axios from 'axios'
 
+const siteurl = import.meta.env.VITE_API_URL
+const { notify } = useNotification()
 const categoriesStore = useCategoriesStore()
 const authStore = useAuthStore()
 const { categories, fetchCategories } = categoriesStore
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 const items = ref([])
 const searchText = ref('')
 const showItemList = ref(false)
-const feedbackMessage = ref('')
 
 const fetchItems = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/inventory/itemlist', {
-      method: 'GET',
+    const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
       headers: {
-        'Content-Type': 'application/json',
+        Accept: 'application/json',
         Authorization: authStore.token
       },
-      credentials: 'include'
+      withCredentials: true // Include credentials (cookies)
     })
-    if (!response.ok) {
-      throw new Error('Failed to fetch items')
+
+    if (response.status === 200) {
+      items.value = response.data.data // Ensure you're accessing the 'data' array correctly
+    } else {
+      notify('Failed to fetch item lists from server', 'error')
     }
-    const data = await response.json()
-    items.value = data.data // Ensure you're accessing the 'data' array correctly
   } catch (error) {
     console.error('Error fetching items:', error)
   }
@@ -149,42 +152,43 @@ const filteredItems = computed(() => {
 
 const savePurchase = async () => {
   try {
-    let response = await fetch(
-      `http://localhost:8000/api/purchase/newpo?Pdate=${purchase.value.Pdate}`,
-      {
-        method: 'GET',
+    if (purchase.value.PO <= 2) {
+      const response = await axios.get(`${siteurl}/api/purchase/newpo`, {
+        params: {
+          Pdate: purchase.value.Pdate
+        },
         headers: {
-          'Content-Type': 'application/json',
+          Accept: 'application/json',
           Authorization: authStore.token
         },
-        credentials: 'include'
-      }
-    )
-    if (!response.ok) {
-      throw new Error('Failed to get PO number')
-    }
-    let data = await response.json()
-    console.log(data)
-    purchase.value.PO = data.newPO
+        withCredentials: true // Include credentials (cookies)
+      })
 
-    response = await fetch('http://localhost:8000/api/purchase/save', {
-      method: 'POST',
+      if (response.status !== 200) {
+        notify('Failed to get PO number from server', 'error')
+        return // Early return if first fetch fails
+      }
+
+      purchase.value.PO = response.data.newPO
+    }
+
+    const responsesave = await axios.post(`${siteurl}/api/purchase/save`, purchase.value, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: authStore.token
+        Accept: 'application/json',
+        Authorization: authStore.token,
+        'X-CSRF-TOKEN': csrfToken // Include the CSRF token
       },
-      credentials: 'include',
-      body: JSON.stringify(purchase.value)
+      withCredentials: true // Include credentials (cookies)
     })
-    if (!response.ok) {
-      throw new Error('Failed to save purchase')
+
+    if (!responsesave.data.success) {
+      notify(responsesave.data.message, 'error')
+    } else {
+      notify(responsesave.data.message, 'success')
     }
-    data = await response.json()
-    console.log(data)
-    feedbackMessage.value = 'Purchase saved successfully!'
   } catch (error) {
-    console.error('Error saving purchase:', error)
-    feedbackMessage.value = 'Error saving purchase. Please try again.'
+    console.error('Error saving purchase record:', error)
   }
 }
 </script>

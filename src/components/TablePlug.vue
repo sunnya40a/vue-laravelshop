@@ -26,43 +26,43 @@
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Item_list')" class="sortable">
-            Item List<span v-if="sortByField === 'Item_list'">
+          <th @click="sortBy('item_list')" class="sortable">
+            Item List<span v-if="sortByField === 'item_list'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Description')" class="sortable">
-            Description<span v-if="sortByField === 'Description'">
+          <th @click="sortBy('description')" class="sortable">
+            Description<span v-if="sortByField === 'description'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Category')" class="sortable">
-            Category<span v-if="sortByField === 'Category'">
+          <th @click="sortBy('category')" class="sortable">
+            Category<span v-if="sortByField === 'category'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Qty')" class="sortable">
-            Qty<span v-if="sortByField === 'Qty'">
+          <th @click="sortBy('qty')" class="sortable">
+            Qty<span v-if="sortByField === 'qty'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('Price')" class="sortable">
-            Price<span v-if="sortByField === 'Price'">
+          <th @click="sortBy('price')" class="sortable">
+            Price<span v-if="sortByField === 'price'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('User')" class="sortable">
-            User<span v-if="sortByField === 'User'">
+          <th @click="sortBy('user')" class="sortable">
+            User<span v-if="sortByField === 'user'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
@@ -72,7 +72,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in sortedData" :key="item.PO">
+        <!-- <tr v-for="item in sortedData" :key="item.PO"> -->
+        <!-- I don't need to sorting function in this component so i disable sorting function below too. -->
+        <tr v-for="item in filteredData" :key="item.PO">
           <td>{{ item.PO }}</td>
           <td>{{ item.Pdate }}</td>
           <td>{{ item.item_list }}</td>
@@ -103,7 +105,9 @@ import SearchComp from '@/components/SearchComp.vue'
 import DateRange from '@/components/DateRange.vue'
 import { parseISO, format } from 'date-fns'
 import { useAuthStore } from '@/stores/auth'
-
+import axios from 'axios'
+import.meta.env.VITE_API_URL
+const siteurl = import.meta.env.VITE_API_URL
 // Reactive variables
 const data = ref(null)
 const currentPage = ref(1)
@@ -133,41 +137,45 @@ const filteredData = computed(() => {
   })
 })
 
-const sortedData = computed(() => {
-  if (!filteredData.value) return null
-  let sorted = filteredData.value.slice()
-  if (sortByField.value) {
-    sorted.sort((a, b) => {
-      let modifier = sortDirection.value === 'desc' ? -1 : 1
-      if (a[sortByField.value] < b[sortByField.value]) return -1 * modifier
-      if (a[sortByField.value] > b[sortByField.value]) return 1 * modifier
-      return 0
-    })
-  }
-  return sorted
-})
+// //function disabled as i don't need in this component
+// const sortedData = computed(() => {
+//   if (!filteredData.value) return null
+//   let sorted = filteredData.value.slice()
+//   if (sortByField.value) {
+//     sorted.sort((a, b) => {
+//       let modifier = sortDirection.value === 'desc' ? -1 : 1
+//       if (a[sortByField.value] < b[sortByField.value]) return -1 * modifier
+//       if (a[sortByField.value] > b[sortByField.value]) return 1 * modifier
+//       return 0
+//     })
+//   }
+//   return sorted
+// })
 
 // Methods
 const fetchData = async () => {
   try {
-    const response = await fetch(
-      `http://localhost:8000/api/purchase/list?page=${currentPage.value}&limit=${limit.value}&search=${searchTerm.value}&datef=${fromDate.value}&datee=${toDate.value}&sortBy=${sortByField.value}&sortOrder=${sortDirection.value}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: authstore.token // Use the stored token
-        },
-        credentials: 'include'
-      }
-    )
+    const response = await axios.get(`${siteurl}/api/purchase/list`, {
+      params: {
+        page: currentPage.value,
+        limit: limit.value,
+        search: searchTerm.value,
+        datef: fromDate.value,
+        datee: toDate.value,
+        sortBy: sortByField.value,
+        sortOrder: sortDirection.value
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authstore.token // Use the stored token
+      },
+      withCredentials: true // Include credentials (cookies)
+    })
 
-    const responseData = await response.json()
+    const responseData = response.data
 
     if (responseData.data !== null) {
-      // Check if responseData.Data is not null
-      // Format Pdate to YY/MM/DD format
-
+      // Format Pdate to dd-MMM-yy format for each item
       responseData.data.forEach((item) => {
         item.Pdate = format(parseISO(item.Pdate), 'dd-MMM-yy')
       })
@@ -176,6 +184,7 @@ const fetchData = async () => {
     } else {
       data.value = []
     }
+
     totalRecords.value = responseData.TotalRecords
     totalPageCount.value = Math.ceil(responseData.TotalRecords / limit.value)
   } catch (error) {

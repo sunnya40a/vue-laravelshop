@@ -1,6 +1,7 @@
 // src/stores/categories.js
 import { defineStore } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
 
 export const useCategoriesStore = defineStore('categories', {
   state: () => ({
@@ -8,22 +9,23 @@ export const useCategoriesStore = defineStore('categories', {
   }),
   actions: {
     async fetchCategories() {
+      const siteurl = import.meta.env.VITE_API_URL
       const authStore = useAuthStore()
+
       try {
-        const response = await fetch('http://localhost:8000/api/categories/list', {
-          method: 'GET',
+        const response = await axios.get(`${siteurl}/api/categories/list`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: authStore.token
           },
-          credentials: 'include'
+          withCredentials: true // Include credentials (cookies)
         })
 
-        if (!response.ok) {
+        if (response.status !== 200) {
           throw new Error('Network response was not ok')
         }
 
-        const data = await response.json()
+        const data = response.data
         console.log('Fetched categories data:', data)
 
         if (Array.isArray(data.data)) {

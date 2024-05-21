@@ -9,6 +9,9 @@ import PurchaseTable from '../components/PurchaseTable.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { parseISO, format } from 'date-fns'
 import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
+
+const siteurl = import.meta.env.VITE_API_URL
 
 const isMounted = ref(true)
 const items = ref([])
@@ -16,18 +19,17 @@ const authstore = useAuthStore()
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/purchase/list', {
-      method: 'GET',
+    const response = await axios.get(`${siteurl}/api/purchase/list`, {
       headers: {
         'Content-Type': 'application/json',
-        authorization: authstore.token // Use the stored token
+        Authorization: authstore.token // Use the stored token
       },
-      credentials: 'include'
+      withCredentials: true // Include credentials (cookies)
     })
 
-    const responseData = await response.json()
+    const responseData = response.data
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
@@ -69,5 +71,4 @@ onUnmounted(() => {
   isMounted.value = false
 })
 </script>
-
 <style lang="scss" scoped></style>

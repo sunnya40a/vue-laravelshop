@@ -1,10 +1,7 @@
 <template>
-    <TablePlug />
+  <TablePlug />
 </template>
-<script>
+<script setup>
 import TablePlug from '@/components/TablePlug.vue'
-export default {
-    components: { TablePlug }
-}
 </script>
 <style lang="scss" scoped></style>

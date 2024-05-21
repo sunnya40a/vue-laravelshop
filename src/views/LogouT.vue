@@ -2,52 +2,56 @@
   <div v-if="isLoggingOut" class="centered-message">Logging out...</div>
 </template>
 
-<script>
+<script setup>
 import { useRouter } from 'vue-router'
 import { LocalCleanup } from '@/service/helper'
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import axios from 'axios'
 
-export default {
-  setup() {
-    const router = useRouter()
-    const isLoggingOut = ref(false)
-    const authstore = useAuthStore()
-    const logout = async () => {
-      try {
-        isLoggingOut.value = true
-        const response = await fetch('http://localhost:8000/api/logout', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            authorization: authstore.token // Use the stored token
-          },
-          credentials: 'include'
-        })
+const router = useRouter()
+const isLoggingOut = ref(false)
+const authstore = useAuthStore()
+const siteurl = import.meta.env.VITE_API_URL
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
+// Get the CSRF token from the meta tag
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
-        // Assuming successful logout if the response is OK
-        LocalCleanup()
-        // Redirect to the login page
-        await router.push({ name: 'Login' })
-      } catch (error) {
-        console.error('An error occurred during logout:', error)
-        // Handle logout failure
-      } finally {
-        isLoggingOut.value = false
+const logout = async () => {
+  try {
+    isLoggingOut.value = true
+    const response = await axios.post(
+      `${siteurl}/api/logout`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authstore.token, // Use the stored token
+          'X-CSRF-TOKEN': csrfToken // Include the CSRF token
+        },
+        withCredentials: true // Include credentials (cookies)
       }
+    )
+
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    onMounted(() => {
-      logout()
-    })
-
-    return { isLoggingOut } // Indicate logout in progress
+    // Assuming successful logout if the response is OK
+    LocalCleanup()
+    // Redirect to the login page
+    await router.push({ name: 'Login' })
+  } catch (error) {
+    console.error('An error occurred during logout:', error)
+    // Handle logout failure
+  } finally {
+    isLoggingOut.value = false
   }
 }
+
+onMounted(() => {
+  logout()
+})
 </script>
 
 <style lang="scss" scoped>

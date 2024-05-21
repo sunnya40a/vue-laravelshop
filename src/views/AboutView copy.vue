@@ -31,6 +31,10 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="vendor">Supplier:</label>
+        <input id="vendor" v-model="purchase.vendor" type="text" required />
+      </div>
+      <div class="form-group">
         <label for="description">Description:</label>
         <textarea id="description" v-model="purchase.description" readonly required></textarea>
       </div>
@@ -51,8 +55,8 @@
         <input id="price" v-model="purchase.price" type="number" required />
       </div>
       <button type="submit">Save</button>
+      <button type="cancel">Cancel</button>
     </form>
-    <p v-if="feedbackMessage">{{ feedbackMessage }}</p>
   </div>
 </template>
 
@@ -60,10 +64,15 @@
 import { ref, onMounted, computed } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
 import { useAuthStore } from '@/stores/auth'
+import useNotification from '@/service/notificationService'
+import axios from 'axios'
 
+const siteurl = import.meta.env.VITE_API_URL
+const { notify } = useNotification()
 const categoriesStore = useCategoriesStore()
 const authStore = useAuthStore()
 const { categories, fetchCategories } = categoriesStore
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 
 const items = ref([])
 const searchText = ref('')
@@ -71,19 +80,19 @@ const showItemList = ref(false)
 
 const fetchItems = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/inventory/itemlist', {
-      method: 'GET',
+    const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authStore.token}`
+        Accept: 'application/json',
+        Authorization: authStore.token
       },
-      credentials: 'include'
+      withCredentials: true // Include credentials (cookies)
     })
-    if (!response.ok) {
-      throw new Error('Failed to fetch items')
+
+    if (response.status === 200) {
+      items.value = response.data.data // Ensure you're accessing the 'data' array correctly
+    } else {
+      notify('Failed to fetch item lists from server', 'error')
     }
-    const data = await response.json()
-    items.value = data.data // Ensure you're accessing the 'data' array correctly
   } catch (error) {
     console.error('Error fetching items:', error)
   }
@@ -103,7 +112,7 @@ onMounted(() => {
 const purchase = ref({
   PO: 0,
   Pdate: '',
-  vendor: '',
+  vendor: 'Chhesko Pvt. Ltd.',
   item_list: '',
   description: '',
   qty: 0,
@@ -111,8 +120,6 @@ const purchase = ref({
   category: '',
   price: 0
 })
-
-const feedbackMessage = ref('')
 
 const handleSearch = () => {
   showItemList.value = true
@@ -142,6 +149,48 @@ const filteredItems = computed(() => {
       item.description.toLowerCase().includes(search)
   )
 })
+
+const savePurchase = async () => {
+  try {
+    if (purchase.value.PO <= 2) {
+      const response = await axios.get(`${siteurl}/api/purchase/newpo`, {
+        params: {
+          Pdate: purchase.value.Pdate
+        },
+        headers: {
+          Accept: 'application/json',
+          Authorization: authStore.token
+        },
+        withCredentials: true // Include credentials (cookies)
+      })
+
+      if (response.status !== 200) {
+        notify('Failed to get PO number from server', 'error')
+        return // Early return if first fetch fails
+      }
+
+      purchase.value.PO = response.data.newPO
+    }
+
+    const responsesave = await axios.post(`${siteurl}/api/purchase/save`, purchase.value, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: authStore.token,
+        'X-CSRF-TOKEN': csrfToken // Include the CSRF token
+      },
+      withCredentials: true // Include credentials (cookies)
+    })
+
+    if (!responsesave.data.success) {
+      notify(responsesave.data.message, 'error')
+    } else {
+      notify(responsesave.data.message, 'success')
+    }
+  } catch (error) {
+    console.error('Error saving purchase record:', error)
+  }
+}
 </script>
 
 <style scoped lang="scss">

@@ -13,8 +13,11 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: './src/frontend',
-    assetsDir: 'assets',
-    sourcemap: true // Ensure source maps are enabled
+    //outDir: '/home/chhabi/golang/aarushishop/frontend',
+    //assetsDir: 'assets'
+    //sourcemap: true // Ensure source maps are enabled
+    outDir: 'dist', // Change this to 'dist' to place the build output in the 'dist' folder
+    assetsDir: 'assets' // Ensure assets are placed in the 'assets' directory within 'dist'
+    //sourcemap: true // Uncomment this line if you want to generate source maps
   }
 })

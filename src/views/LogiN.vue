@@ -1,4 +1,3 @@
-// Login.vue
 <template>
   <div id="login" class="login-container">
     <form @submit.prevent="login">
@@ -44,106 +43,86 @@
   </div>
 </template>
 
-<script>
-import { ref, onBeforeUnmount } from 'vue'
+<script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { cryptoService } from '@/service/security'
 import useNotification from '@/service/notificationService'
+import axios from 'axios'
 
-export default {
-  name: 'LogiN',
-  emits: ['vnode-unmounted'],
+const input = ref({
+  username: '',
+  password: ''
+})
+const isPasswordVisible = ref(false)
+const router = useRouter()
+const authStore = useAuthStore()
+const notify = useNotification()
+const siteurl = import.meta.env.VITE_API_URL
 
-  setup(_, { emit, vnode }) {
-    const input = ref({
-      username: '',
-      password: ''
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value
+}
+
+const fetchCsrfToken = async () => {
+  try {
+    const response = await axios.get(`${siteurl}/sanctum/csrf-cookie`, {
+      withCredentials: true // Ensure cookies are sent
     })
-    const isPasswordVisible = ref(false)
-    const router = useRouter()
-    const authStore = useAuthStore()
-    const { notify } = useNotification()
-
-    const togglePasswordVisibility = () => {
-      isPasswordVisible.value = !isPasswordVisible.value
+    if (response.status !== 204) {
+      notify('Failed to fetch CSRF token.', 'error')
+      throw new Error('Failed to fetch CSRF token')
     }
-
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
-          method: 'GET',
-          credentials: 'include' // Ensure cookies are sent
-        })
-        if (!response.ok) {
-          notify('Failed to fetch CSRF token.', 'error')
-          throw new Error('Failed to fetch CSRF token')
-        }
-      } catch (error) {
-        notify("Couldn't communite with server.", 'error')
-        throw new Error('Failed to fetch CSRF token')
+  } catch (error) {
+    notify("Couldn't communicate with server.", 'error')
+    throw new Error('Failed to fetch CSRF token')
+  }
+}
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+const login = async () => {
+  try {
+    // Fetch CSRF token first
+    await fetchCsrfToken()
+    const response = await axios.post(
+      // Changed from axios.get to axios.post for login
+      `${siteurl}/api/login`,
+      {
+        name: input.value.username,
+        password: input.value.password
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-CSRF-TOKEN': csrfToken // Include the CSRF token
+        },
+        withCredentials: true // Include credentials (cookies)
       }
-    }
+    )
 
-    const login = async () => {
-      try {
-        // Fetch CSRF token first
-        await fetchCsrfToken()
+    const responseData = response.data
 
-        const response = await fetch('http://localhost:8000/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: input.value.username,
-            password: input.value.password
-          }),
-          credentials: 'include' // Include credentials (cookies)
-        })
-
-        if (!response.ok) {
-          notify('Authentication failed. Please check your credentials.', 'error')
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const responseData = await response.json()
-
-        if (response.status >= 200 && response.status < 300) {
-          if (responseData.token) {
-            authStore.setToken(responseData.token)
-          }
-          authStore.setTokenreftime(new Date().setMinutes(new Date().getMinutes() + 10)) //10 min
-          const authindex = {
-            user: input.value.username,
-            authorized: true,
-            token: authStore.token,
-            tokenreftime: authStore.tokenreftime
-          }
-          cryptoService.saveData(authindex, 'userindex')
-          router.replace({ name: 'dashboard' })
-        } else {
-          console.error('Authentication failed. Status code:', response.status)
-        }
-      } catch (error) {
-        console.error('An error occurred during authentication:', error)
-        notify(error, 'error')
+    if (response.status >= 200 && response.status < 300) {
+      if (responseData.token) {
+        authStore.setToken(responseData.token)
       }
-    }
-
-    onBeforeUnmount(() => {
-      if (vnode) {
-        emit('vnode-unmounted')
+      authStore.setTokenreftime(new Date().setMinutes(new Date().getMinutes() + 10)) // 10 min
+      const authindex = {
+        user: input.value.username,
+        authorized: true,
+        token: authStore.token,
+        tokenreftime: authStore.tokenreftime
       }
-    })
-
-    return {
-      input,
-      isPasswordVisible,
-      authStore,
-      togglePasswordVisibility,
-      login
+      cryptoService.saveData(authindex, 'userindex')
+      router.replace({ name: 'dashboard' })
+    } else {
+      notify('Authentication failed. Please check your credentials.', 'error')
+      console.error('Authentication failed. Status code:', response.status)
     }
+  } catch (error) {
+    notify('An error occurred during authentication.', 'error')
+    console.error('An error occurred during authentication:', error)
   }
 }
 </script>

@@ -43,9 +43,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useCategoriesStore } from '@/stores/categories'
+import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
+const siteurl = import.meta.env.VITE_API_URL
 const categoriesStore = useCategoriesStore()
 const { categories, fetchCategories } = categoriesStore
+const authstore = useAuthStore()
 
 onMounted(() => {
   if (categories.length === 0) {
@@ -62,25 +66,21 @@ const purchase = ref({
   price: 584,
   User: 'Chalise'
 })
-
-const savePurchase = () => {
-  const url = 'http://localhost:8000/purchaseapi'
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(purchase.value)
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+const savePurchase = async () => {
+  const url = `${siteurl}/api/purchaseapi`
+  try {
+    const response = await axios.post(url, purchase.value, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authstore.token, // Use the stored token
+        'X-CSRF-TOKEN': csrfToken // Include the CSRF token
+      }
+    })
+    console.log('Data saved successfully:', response.data)
+  } catch (error) {
+    console.error('Error saving data:', error)
   }
-
-  fetch(url, options)
-    .then((response) => response.json())
-    .then((data) => {
-      console.log('Data saved successfully:', data)
-    })
-    .catch((error) => {
-      console.error('Error saving data:', error)
-    })
 }
 </script>
 
