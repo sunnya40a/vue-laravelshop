@@ -33,8 +33,8 @@
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('description')" class="sortable">
-            Description<span v-if="sortByField === 'description'">
+          <th @click="sortBy('material_desc')" class="sortable">
+            Description<span v-if="sortByField === 'material_desc'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
@@ -78,7 +78,7 @@
           <td>{{ item.PO }}</td>
           <td>{{ item.Pdate }}</td>
           <td>{{ item.item_list }}</td>
-          <td>{{ item.description }}</td>
+          <td>{{ item.material_desc }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.qty }}</td>
           <td>{{ item.price }}</td>

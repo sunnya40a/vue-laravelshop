@@ -43,7 +43,7 @@ const router = createRouter({
     {
       path: '/pentry',
       name: 'Purchase Entry',
-      component: () => import('../views/PurchaseEntryCol.vue'),
+      component: () => import('../views/PurchaseEntryEdit.vue'),
       meta: { requiresAuth: true }
     },
     {

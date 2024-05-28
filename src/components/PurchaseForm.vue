@@ -1,0 +1,470 @@
+<template>
+  <div class="modal">
+    <div class="header">
+      <span class="close" @click="closeModal">&times;</span>
+      <h2 class="heading">Purchase {{ purchase ? 'Edit' : 'Entry' }} Form</h2>
+      <div class="modal-content">
+        <form @submit.prevent="submitForm">
+          <div class="form-group">
+            <label for="po">PO:</label>
+            <input id="po" v-model="form.PO" type="number" required />
+          </div>
+          <div class="form-group">
+            <label for="Pdate">Date:</label>
+            <input id="Pdate" v-model="form.Pdate" type="date" required />
+          </div>
+          <div class="form-group">
+            <label for="itemList">Item List:</label>
+            <div class="autocomplete">
+              <input
+                id="itemList"
+                v-model="searchItemText"
+                type="text"
+                @input="handleItemSearch"
+                @focus="showItemList = true"
+                @blur="handleItemBlur"
+                placeholder="Search or select an item"
+                required
+              />
+              <ul v-if="showItemList" class="item-list">
+                <li v-for="item in filteredItems" :key="item.item_list" @click="selectItem(item)">
+                  [ {{ item.item_list }} ] {{ item.description }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="supplier_id">Supplier:</label>
+            <div class="autocomplete">
+              <input
+                id="supplier_id"
+                v-model="searchSupplierText"
+                type="text"
+                @input="handleSupplierSearch"
+                @focus="showSupplierList = true"
+                @blur="handleSupplierBlur"
+                placeholder="Search or select a supplier"
+                required
+              />
+              <ul v-if="showSupplierList" class="supplier_id">
+                <li
+                  v-for="supplier in filteredSuppliers"
+                  :key="supplier.id"
+                  @click="selectSupplier(supplier)"
+                >
+                  [ {{ supplier.id }} ] {{ supplier.s_name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" v-model="form.material_desc" readonly required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="category">Category:</label>
+            <input id="category" v-model="form.category" type="text" readonly required />
+          </div>
+          <div class="form-group">
+            <label for="qty">Qty:</label>
+            <input id="qty" v-model="form.qty" type="number" required />
+          </div>
+          <div class="form-group">
+            <label for="unit">Unit:</label>
+            <input id="unit" v-model="form.unit" type="text" readonly required />
+          </div>
+
+          <div class="form-group">
+            <label for="u_price">Unit Price:</label>
+            <input id="u_price" v-model="form.u_price" type="number" required />
+          </div>
+
+          <div class="form-group">
+            <label for="price">Total Price:</label>
+            <input id="p_price" v-model="form.p_price" type="number" readonly required />
+          </div>
+          <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+              <span class="material-icons">save</span>
+              {{ purchase ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              <span class="material-icons">cancel</span>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import axios from 'axios'
+import { defineProps, defineEmits } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
+import { useCategoriesStore } from '@/stores/categories'
+import { useAuthStore } from '@/stores/auth'
+import useNotification from '@/service/notificationService'
+
+const props = defineProps({
+  purchase: {
+    type: Object,
+    default: null
+  }
+})
+
+const siteurl = import.meta.env.VITE_API_URL
+const { notify } = useNotification()
+const categoriesStore = useCategoriesStore()
+const authStore = useAuthStore()
+const { categories, fetchCategories } = categoriesStore
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+const items = ref([])
+const searchItemText = ref('')
+const showItemList = ref(false)
+
+const suppliers = ref([])
+const searchSupplierText = ref('')
+const showSupplierList = ref(false)
+
+const form = ref({
+  PO: props.purchase ? props.purchase.PO : '',
+  Pdate: props.purchase ? props.purchase.Pdate : '',
+  item_list: props.purchase ? props.purchase.item_list : '',
+  material_desc: props.purchase ? props.purchase.material_desc : '',
+  category: props.purchase ? props.purchase.category : '',
+  qty: props.purchase ? props.purchase.qty : '',
+  unit: props.purchase ? props.purchase.unit : '',
+  u_price: props.purchase ? props.purchase.u_price : '',
+  p_price: props.purchase ? props.purchase.p_price : ''
+})
+
+const fetchItems = async () => {
+  try {
+    const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: authStore.token
+      },
+      withCredentials: true
+    })
+
+    if (response.status === 200) {
+      items.value = response.data.data
+    } else {
+      notify('Failed to fetch item lists from server', 'error')
+    }
+  } catch (error) {
+    console.error('Error fetching items:', error)
+  }
+}
+
+const fetchSuppliers = async () => {
+  try {
+    const response = await axios.get(`${siteurl}/api/suppliers/list`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: authStore.token
+      },
+      withCredentials: true
+    })
+
+    if (response.status === 200) {
+      suppliers.value = response.data.data
+    } else {
+      notify('Failed to fetch suppliers lists from server', 'error')
+    }
+  } catch (error) {
+    console.error('Error fetching suppliers:', error)
+  }
+}
+
+onMounted(() => {
+  if (categories.length === 0) {
+    fetchCategories()
+  }
+  fetchSuppliers()
+  fetchItems()
+  if (!props.purchase) {
+    const today = new Date().toISOString().substr(0, 10)
+    form.value.Pdate = today
+  }
+})
+
+const handleItemSearch = () => {
+  showItemList.value = true
+}
+
+const handleSupplierSearch = () => {
+  showSupplierList.value = true
+}
+
+const handleSupplierBlur = () => {
+  setTimeout(() => {
+    showSupplierList.value = false
+  }, 200)
+}
+
+const handleItemBlur = () => {
+  setTimeout(() => {
+    showItemList.value = false
+  }, 200)
+}
+
+const selectItem = (item) => {
+  form.value.item_list = item.item_list
+  form.value.description = item.description
+  form.value.category = item.category
+  form.value.unit = item.unit
+  searchItemText.value = `${item.item_list} - ${item.description}`
+  showItemList.value = false
+}
+
+const selectSupplier = (supplier) => {
+  form.value.supplier_id = supplier.id
+  searchSupplierText.value = `${supplier.id} - ${supplier.s_name}`
+  showSupplierList.value = false
+}
+
+const filteredItems = computed(() => {
+  const search = searchItemText.value.toLowerCase()
+  return items.value.filter(
+    (item) =>
+      item.item_list.toLowerCase().includes(search) ||
+      item.description.toLowerCase().includes(search)
+  )
+})
+
+const filteredSuppliers = computed(() => {
+  const search = searchSupplierText.value.toLowerCase()
+  return suppliers.value.filter(
+    (supplier) =>
+      supplier.s_name.toLowerCase().includes(search) || supplier.id.toString().includes(search)
+  )
+})
+
+const emit = defineEmits(['close', 'refresh'])
+
+watch(
+  () => props.purchase,
+  (newPurchase) => {
+    form.value = newPurchase
+      ? {
+          PO: newPurchase.PO,
+          Pdate: newPurchase.Pdate,
+          item_list: newPurchase.item_list,
+          material_desc: newPurchase.material_desc,
+          category: newPurchase.category,
+          qty: newPurchase.qty,
+          unit: newPurchase.unit,
+          u_price: newPurchase.u_price,
+          p_price: newPurchase.p_price
+        }
+      : {
+          PO: '',
+          Pdate: '',
+          item_list: '',
+          material_desc: '',
+          category: '',
+          qty: '',
+          unit: '',
+          u_price: '',
+          p_price: ''
+        }
+  }
+)
+
+const closeModal = () => {
+  emit('close')
+}
+
+const submitForm = async () => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: authStore.token,
+      'X-CSRF-TOKEN': csrfToken
+    }
+
+    let response
+
+    if (props.purchase) {
+      response = await axios.put(`${siteurl}/api/purchase/${props.purchase.id}`, form.value, {
+        headers
+      })
+    } else {
+      if (form.value.PO <= 2) {
+        const poResponse = await axios.get(`${siteurl}/api/purchase/newpo`, {
+          params: { Pdate: form.value.Pdate },
+          headers: {
+            Accept: 'application/json',
+            Authorization: authStore.token
+          },
+          withCredentials: true
+        })
+
+        if (poResponse.status === 200) {
+          form.value.PO = poResponse.data.newPO
+        } else {
+          notify('Failed to get PO number from server', 'error')
+          return
+        }
+      }
+
+      response = await axios.post(`${siteurl}/api/purchase/save`, form.value, { headers })
+    }
+
+    if (response.status >= 200 && response.status < 300) {
+      notify(response.data.message || 'Purchase saved successfully', 'success')
+      emit('refresh')
+      emit('close')
+    } else {
+      notify(response.data.message || 'Failed to save purchase', 'error')
+    }
+  } catch (error) {
+    console.error('Error:', error)
+    notify(error.response?.data?.message || 'An error occurred while saving purchase', 'error')
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header {
+  font-size: 15px;
+  margin: 10px;
+  position: relative;
+  background: #007bff;
+  padding: 15px 0;
+  border-radius: 8px;
+  width: 600px;
+  max-width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  .heading {
+    color: white;
+    margin-left: 15px;
+  }
+}
+
+.modal-content {
+  margin-top: 10px;
+  background: white;
+  padding: 15px;
+  font-size: 12px;
+}
+
+.close {
+  position: absolute;
+  color: white;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+
+  label {
+    width: 100px;
+    font-weight: bold;
+  }
+
+  input,
+  textarea {
+    flex: 1;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  textarea {
+    resize: vertical;
+    height: 50px;
+  }
+}
+
+.autocomplete {
+  position: relative;
+
+  .item-list,
+  .supplier_id {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #f0f0f0;
+    border: 1px solid blue;
+    border-top: none;
+    z-index: 1000;
+
+    li {
+      padding: 10px;
+      cursor: pointer;
+
+      &:hover {
+        background: #d4d4d4;
+      }
+    }
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+
+    &:hover {
+      background-color: #5a6268;
+    }
+  }
+}
+</style>

@@ -15,7 +15,7 @@ export const useCategoriesStore = defineStore('categories', {
       try {
         const response = await axios.get(`${siteurl}/api/categories/list`, {
           headers: {
-            'Content-Type': 'application/json',
+            Accept: 'application/json',
             Authorization: authStore.token
           },
           withCredentials: true // Include credentials (cookies)
@@ -26,12 +26,10 @@ export const useCategoriesStore = defineStore('categories', {
         }
 
         const data = response.data
-        console.log('Fetched categories data:', data)
 
         if (Array.isArray(data.data)) {
           this.categories = data.data.map((category) => category.description)
           localStorage.setItem('categories', JSON.stringify(this.categories)) // Save to local storage
-          console.log('Mapped categories:', this.categories)
         } else {
           throw new Error('Data format is not as expected')
         }

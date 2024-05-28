@@ -26,7 +26,7 @@
           <td>{{ item.PO }}</td>
           <td>{{ item.Pdate }}</td>
           <td>{{ item.item_list }}</td>
-          <td>{{ item.description }}</td>
+          <td>{{ item.material_desc }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.qty }}</td>
           <td>{{ item.price }}</td>
@@ -124,7 +124,7 @@ const filteredItems = computed(() => {
       item.price.toString().includes(searchTermLower) ||
       item.Pdate.toLowerCase().includes(searchTermLower) ||
       item.item_list.toLowerCase().includes(searchTermLower) ||
-      item.description.toLowerCase().includes(searchTermLower) ||
+      item.material_desc.toLowerCase().includes(searchTermLower) ||
       item.category.toLowerCase().includes(searchTermLower) ||
       item.user.toLowerCase().includes(searchTermLower)
     )
