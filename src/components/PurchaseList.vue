@@ -12,6 +12,7 @@
             <th>Item List</th>
             <th>Description</th>
             <th>Category</th>
+            <th>Supplier</th>
             <th>Qty</th>
             <th>Price</th>
             <th>User</th>
@@ -28,6 +29,7 @@
             <td>{{ purchase.item_list }}</td>
             <td>{{ purchase.material_desc }}</td>
             <td>{{ purchase.category }}</td>
+            <td>{{ purchase.supplier_id }}</td>
             <td>{{ purchase.qty }}</td>
             <td>{{ purchase.price }}</td>
             <td>{{ purchase.user }}</td>
@@ -38,7 +40,7 @@
               <button class="action-btn edit-btn" @click="editRecord(purchase)">
                 <span class="material-icons">edit</span> Edit
               </button>
-              <button class="action-btn delete-btn" @click="deleteRecord(purchase.id)">
+              <button class="action-btn delete-btn" @click="deleteRecord(purchase.PO)">
                 <span class="material-icons">delete</span> Delete
               </button>
             </td>
@@ -85,7 +87,6 @@ const fetchPurchases = async () => {
     })
 
     purchases.value = response.data.data // Assign fetched data to purchases
-    console.log('Fetched purchases:', purchases.value) // Log fetched data
   } catch (error) {
     console.error('Error fetching purchases:', error)
   }
@@ -97,7 +98,10 @@ const showAddForm = () => {
 }
 
 const viewRecord = (purchase) => {
-  alert(`Viewing record: ${purchase.PO}`)
+  selectedPurchase.value = purchase
+  isFormVisible.value = true
+
+  //alert(`Viewing record: ${purchase.PO}`)
 }
 
 const editRecord = (purchase) => {
@@ -106,8 +110,10 @@ const editRecord = (purchase) => {
 }
 
 const deleteRecord = async (id) => {
+  alert(`Viewing record: ${id}`)
   try {
-    await axios.delete(`${siteUrl}/api/purchase/${id}`, {
+    await axios.delete(`${siteUrl}/api/purchase/delete?PO=${id}`, {
+      //http://localhost:8000/api/purchase/delete?PO=1015
       headers: {
         Authorization: `Bearer ${authStore.token}` // Ensure token is formatted correctly
       }

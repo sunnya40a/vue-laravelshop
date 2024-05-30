@@ -28,7 +28,7 @@
               />
               <ul v-if="showItemList" class="item-list">
                 <li v-for="item in filteredItems" :key="item.item_list" @click="selectItem(item)">
-                  [ {{ item.item_list }} ] {{ item.description }}
+                  [{{ item.item_list }}] {{ item.description }}
                 </li>
               </ul>
             </div>
@@ -47,21 +47,21 @@
                 placeholder="Search or select a supplier"
                 required
               />
-              <ul v-if="showSupplierList" class="supplier_id">
+              <ul v-if="showSupplierList" class="supplier_list">
                 <li
                   v-for="supplier in filteredSuppliers"
                   :key="supplier.id"
                   @click="selectSupplier(supplier)"
                 >
-                  [ {{ supplier.id }} ] {{ supplier.s_name }}
+                  {{ supplier.s_name }}
                 </li>
               </ul>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="description">Description:</label>
-            <textarea id="description" v-model="form.material_desc" readonly required></textarea>
+            <label for="material_desc">Description:</label>
+            <textarea id="material_desc" v-model="form.material_desc" readonly required></textarea>
           </div>
           <div class="form-group">
             <label for="category">Category:</label>
@@ -69,7 +69,7 @@
           </div>
           <div class="form-group">
             <label for="qty">Qty:</label>
-            <input id="qty" v-model="form.qty" type="number" required />
+            <input id="qty" v-model="form.qty" type="number" @input="updateTotalPrice" required />
           </div>
           <div class="form-group">
             <label for="unit">Unit:</label>
@@ -78,12 +78,22 @@
 
           <div class="form-group">
             <label for="u_price">Unit Price:</label>
-            <input id="u_price" v-model="form.u_price" type="number" required />
+            <input
+              id="u_price"
+              v-model="form.u_price"
+              type="number"
+              @input="updateTotalPrice"
+              required
+            />
           </div>
 
           <div class="form-group">
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly required />
+          </div>
+          <div class="form-group">
+            <label for="paid_status">Paid Status:</label>
+            <input id="paid_status" v-model="form.paid_status" type="number" readonly required />
           </div>
           <div class="button-group">
             <button type="submit" class="btn btn-primary">
@@ -104,9 +114,10 @@
 <script setup>
 import axios from 'axios'
 import { defineProps, defineEmits } from 'vue'
-import { ref, watch, onMounted, computed } from 'vue'
-import { useCategoriesStore } from '@/stores/categories'
+import { ref, onMounted, computed } from 'vue'
+import { useSuppliersStore } from '@/stores/suppliers'
 import { useAuthStore } from '@/stores/auth'
+import { useItemlistsStore } from '@/stores/itemlists'
 import useNotification from '@/service/notificationService'
 
 const props = defineProps({
@@ -115,21 +126,12 @@ const props = defineProps({
     default: null
   }
 })
-
 const siteurl = import.meta.env.VITE_API_URL
 const { notify } = useNotification()
-const categoriesStore = useCategoriesStore()
+const suppliersStore = useSuppliersStore()
+const itemlistsStore = useItemlistsStore()
 const authStore = useAuthStore()
-const { categories, fetchCategories } = categoriesStore
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-
-const items = ref([])
-const searchItemText = ref('')
-const showItemList = ref(false)
-
-const suppliers = ref([])
-const searchSupplierText = ref('')
-const showSupplierList = ref(false)
 
 const form = ref({
   PO: props.purchase ? props.purchase.PO : '',
@@ -140,56 +142,45 @@ const form = ref({
   qty: props.purchase ? props.purchase.qty : '',
   unit: props.purchase ? props.purchase.unit : '',
   u_price: props.purchase ? props.purchase.u_price : '',
-  p_price: props.purchase ? props.purchase.p_price : ''
+  p_price: props.purchase ? props.purchase.p_price : '',
+  supplier_id: props.purchase ? props.purchase.supplier_id : '',
+  paid_status: props.purchase ? props.purchase.paid_status : ''
 })
 
-const fetchItems = async () => {
-  try {
-    const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: authStore.token
-      },
-      withCredentials: true
-    })
+const searchItemText = ref('')
+const showItemList = ref(false)
 
-    if (response.status === 200) {
-      items.value = response.data.data
-    } else {
-      notify('Failed to fetch item lists from server', 'error')
-    }
-  } catch (error) {
-    console.error('Error fetching items:', error)
-  }
+const searchSupplierText = ref('')
+const showSupplierList = ref(false)
+
+const supplierName = computed(() => {
+  const supplier = suppliersStore.suppliers.find(
+    (supplier) => supplier.id === form.value.supplier_id
+  )
+  return supplier ? supplier.s_name : ''
+})
+
+const itemList = computed(() => {
+  //const item = itemlistsStore.itemlists.find((item) => item.id === form.value.id)
+  const item = itemlistsStore.itemlists.find(
+    (itemlists) => itemlists.item_list === form.value.item_list
+  )
+  return item ? `[${item.item_list}] ${item.description}` : ''
+})
+
+const updateTotalPrice = () => {
+  // Calculate total price based on qty and u_price
+  form.value.p_price = form.value.qty * form.value.u_price
 }
 
-const fetchSuppliers = async () => {
-  try {
-    const response = await axios.get(`${siteurl}/api/suppliers/list`, {
-      headers: {
-        Accept: 'application/json',
-        Authorization: authStore.token
-      },
-      withCredentials: true
-    })
+onMounted(async () => {
+  await suppliersStore.fetchSuppliers()
+  await itemlistsStore.fetchItemlists()
 
-    if (response.status === 200) {
-      suppliers.value = response.data.data
-    } else {
-      notify('Failed to fetch suppliers lists from server', 'error')
-    }
-  } catch (error) {
-    console.error('Error fetching suppliers:', error)
-  }
-}
-
-onMounted(() => {
-  if (categories.length === 0) {
-    fetchCategories()
-  }
-  fetchSuppliers()
-  fetchItems()
-  if (!props.purchase) {
+  if (props.purchase) {
+    searchSupplierText.value = supplierName.value
+    searchItemText.value = itemList.value
+  } else {
     const today = new Date().toISOString().substr(0, 10)
     form.value.Pdate = today
   }
@@ -217,22 +208,24 @@ const handleItemBlur = () => {
 
 const selectItem = (item) => {
   form.value.item_list = item.item_list
-  form.value.description = item.description
+  console.log(item.item_list)
+  form.value.material_desc = item.description
   form.value.category = item.category
+  form.value.paid_status = 3 // 3 mean on credit.
   form.value.unit = item.unit
-  searchItemText.value = `${item.item_list} - ${item.description}`
+  searchItemText.value = `[${item.item_list}] ${item.description}`
   showItemList.value = false
 }
 
 const selectSupplier = (supplier) => {
   form.value.supplier_id = supplier.id
-  searchSupplierText.value = `${supplier.id} - ${supplier.s_name}`
+  searchSupplierText.value = supplier.s_name
   showSupplierList.value = false
 }
 
 const filteredItems = computed(() => {
   const search = searchItemText.value.toLowerCase()
-  return items.value.filter(
+  return itemlistsStore.itemlists.filter(
     (item) =>
       item.item_list.toLowerCase().includes(search) ||
       item.description.toLowerCase().includes(search)
@@ -240,48 +233,18 @@ const filteredItems = computed(() => {
 })
 
 const filteredSuppliers = computed(() => {
+  if (!suppliersStore.suppliers) return []
   const search = searchSupplierText.value.toLowerCase()
-  return suppliers.value.filter(
-    (supplier) =>
-      supplier.s_name.toLowerCase().includes(search) || supplier.id.toString().includes(search)
+  return suppliersStore.suppliers.filter((supplier) =>
+    supplier.s_name.toLowerCase().includes(search)
   )
 })
 
 const emit = defineEmits(['close', 'refresh'])
 
-watch(
-  () => props.purchase,
-  (newPurchase) => {
-    form.value = newPurchase
-      ? {
-          PO: newPurchase.PO,
-          Pdate: newPurchase.Pdate,
-          item_list: newPurchase.item_list,
-          material_desc: newPurchase.material_desc,
-          category: newPurchase.category,
-          qty: newPurchase.qty,
-          unit: newPurchase.unit,
-          u_price: newPurchase.u_price,
-          p_price: newPurchase.p_price
-        }
-      : {
-          PO: '',
-          Pdate: '',
-          item_list: '',
-          material_desc: '',
-          category: '',
-          qty: '',
-          unit: '',
-          u_price: '',
-          p_price: ''
-        }
-  }
-)
-
 const closeModal = () => {
   emit('close')
 }
-
 const submitForm = async () => {
   try {
     const headers = {
@@ -294,9 +257,15 @@ const submitForm = async () => {
     let response
 
     if (props.purchase) {
-      response = await axios.put(`${siteurl}/api/purchase/${props.purchase.id}`, form.value, {
-        headers
-      })
+      response = await axios.put(
+        `${siteurl}/api/purchase/update?PO=${props.purchase.PO}`,
+        form.value,
+        {
+          headers
+
+          //api/purchase/update?PO=
+        }
+      )
     } else {
       if (form.value.PO <= 2) {
         const poResponse = await axios.get(`${siteurl}/api/purchase/newpo`, {
@@ -409,7 +378,7 @@ const submitForm = async () => {
   position: relative;
 
   .item-list,
-  .supplier_id {
+  .supplier_list {
     position: absolute;
     top: 100%;
     left: 0;
