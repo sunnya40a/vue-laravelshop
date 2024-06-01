@@ -7,11 +7,13 @@ import { useRouter } from 'vue-router'
 import { LocalCleanup } from '@/service/helper'
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useStore } from '@/stores/navigation'
 import axios from 'axios'
 
 const router = useRouter()
 const isLoggingOut = ref(false)
 const authstore = useAuthStore()
+const navstore = useStore()
 const siteurl = import.meta.env.VITE_API_URL
 
 // Get the CSRF token from the meta tag
@@ -38,6 +40,7 @@ const logout = async () => {
     }
 
     // Assuming successful logout if the response is OK
+    navstore.setActivemenu('0/home') //changing navication highlights.
     LocalCleanup()
     // Redirect to the login page
     await router.push({ name: 'Login' })

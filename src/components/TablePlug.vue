@@ -137,21 +137,6 @@ const filteredData = computed(() => {
   })
 })
 
-// //function disabled as i don't need in this component
-// const sortedData = computed(() => {
-//   if (!filteredData.value) return null
-//   let sorted = filteredData.value.slice()
-//   if (sortByField.value) {
-//     sorted.sort((a, b) => {
-//       let modifier = sortDirection.value === 'desc' ? -1 : 1
-//       if (a[sortByField.value] < b[sortByField.value]) return -1 * modifier
-//       if (a[sortByField.value] > b[sortByField.value]) return 1 * modifier
-//       return 0
-//     })
-//   }
-//   return sorted
-// })
-
 // Methods
 const fetchData = async () => {
   try {
@@ -205,6 +190,8 @@ const Daterange = ({ startDate, endDate }) => {
     // Format dates to YYYY-MM-DD format
     const formattedStartDate = format(startDate, 'yyyy-MM-dd')
     const formattedEndDate = format(endDate, 'yyyy-MM-dd')
+
+    console.log('From ->' + formattedStartDate + '-- To->' + formattedEndDate)
 
     fromDate.value = formattedStartDate
     toDate.value = formattedEndDate
