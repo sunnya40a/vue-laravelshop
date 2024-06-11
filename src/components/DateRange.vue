@@ -33,7 +33,7 @@ const timefilter = (e) => {
   const { startDate, endDate } = calculateDateRange(e.target.value)
   //console.log('Start Date:', startDate)
   //console.log('End Date:', endDate)
-  console.log('Start Date: ' + startDate + ' End Date:' + endDate)
+  //console.log('Start Date: ' + startDate + ' End Date:' + endDate)
   emit('dateRangeSelected', { startDate, endDate })
 }
 

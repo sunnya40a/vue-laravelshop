@@ -191,7 +191,7 @@ const Daterange = ({ startDate, endDate }) => {
     const formattedStartDate = format(startDate, 'yyyy-MM-dd')
     const formattedEndDate = format(endDate, 'yyyy-MM-dd')
 
-    console.log('From ->' + formattedStartDate + '-- To->' + formattedEndDate)
+    //console.log('From ->' + formattedStartDate + '-- To->' + formattedEndDate)
 
     fromDate.value = formattedStartDate
     toDate.value = formattedEndDate

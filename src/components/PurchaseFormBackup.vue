@@ -2,24 +2,16 @@
   <div class="modal">
     <div class="header">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="heading">
-        Purchase {{ mode === 'edit' ? 'Edit' : mode === 'view' ? 'View' : 'Entry' }} Form
-      </h2>
+      <h2 class="heading">Purchase {{ purchase ? 'Edit' : 'Entry' }} Form</h2>
       <div class="modal-content">
-        <form @submit.prevent="submitForm" v-if="mode !== 'view'">
+        <form @submit.prevent="submitForm">
           <div class="form-group">
             <label for="po">PO:</label>
-            <input id="po" v-model="form.PO" type="number" required :readonly="mode === 'view'" />
+            <input id="po" v-model="form.PO" type="number" required />
           </div>
           <div class="form-group">
             <label for="Pdate">Date:</label>
-            <input
-              id="Pdate"
-              v-model="form.Pdate"
-              type="date"
-              required
-              :readonly="mode === 'view'"
-            />
+            <input id="Pdate" v-model="form.Pdate" type="date" required />
           </div>
           <div class="form-group">
             <label for="itemList">Item List:</label>
@@ -33,9 +25,8 @@
                 @blur="handleItemBlur"
                 placeholder="Search or select an item"
                 required
-                :readonly="mode === 'view'"
               />
-              <ul v-if="showItemList && mode !== 'view'" class="item-list">
+              <ul v-if="showItemList" class="item-list">
                 <li v-for="item in filteredItems" :key="item.item_list" @click="selectItem(item)">
                   [{{ item.item_list }}] {{ item.description }}
                 </li>
@@ -55,9 +46,8 @@
                 @blur="handleSupplierBlur"
                 placeholder="Search or select a supplier"
                 required
-                :readonly="mode === 'view'"
               />
-              <ul v-if="showSupplierList && mode !== 'view'" class="supplier_list">
+              <ul v-if="showSupplierList" class="supplier_list">
                 <li
                   v-for="supplier in filteredSuppliers"
                   :key="supplier.id"
@@ -79,14 +69,7 @@
           </div>
           <div class="form-group">
             <label for="qty">Qty:</label>
-            <input
-              id="qty"
-              v-model="form.qty"
-              type="number"
-              @input="updateTotalPrice"
-              required
-              :readonly="mode === 'view'"
-            />
+            <input id="qty" v-model="form.qty" type="number" @input="updateTotalPrice" required />
           </div>
           <div class="form-group">
             <label for="unit">Unit:</label>
@@ -101,9 +84,9 @@
               type="number"
               @input="updateTotalPrice"
               required
-              :readonly="mode === 'view'"
             />
           </div>
+
           <div class="form-group">
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly required />
@@ -113,7 +96,7 @@
             <input id="paid_status" v-model="form.paid_status" type="number" readonly required />
           </div>
           <div class="button-group">
-            <button type="submit" class="btn btn-primary" v-if="mode !== 'view'">
+            <button type="submit" class="btn btn-primary">
               <span class="material-icons">save</span>
               {{ purchase ? 'Update' : 'Save' }}
             </button>
@@ -123,62 +106,11 @@
             </button>
           </div>
         </form>
-        <div v-else>
-          <div class="form-group">
-            <label>PO:</label>
-            <span>{{ form.PO }}</span>
-          </div>
-          <div class="form-group">
-            <label>Date:</label>
-            <span>{{ form.Pdate }}</span>
-          </div>
-          <div class="form-group">
-            <label>Item List:</label>
-            <span>{{ searchItemText }}</span>
-          </div>
-          <div class="form-group">
-            <label>Supplier:</label>
-            <span>{{ searchSupplierText }}</span>
-          </div>
-          <div class="form-group">
-            <label>Description:</label>
-            <span>{{ form.material_desc }}</span>
-          </div>
-          <div class="form-group">
-            <label>Category:</label>
-            <span>{{ form.category }}</span>
-          </div>
-          <div class="form-group">
-            <label>Qty:</label>
-            <span>{{ form.qty }}</span>
-          </div>
-          <div class="form-group">
-            <label>Unit:</label>
-            <span>{{ form.unit }}</span>
-          </div>
-          <div class="form-group">
-            <label>Unit Price:</label>
-            <span>{{ form.u_price }}</span>
-          </div>
-          <div class="form-group">
-            <label>Total Price:</label>
-            <span>{{ form.p_price }}</span>
-          </div>
-          <div class="form-group">
-            <label>Paid Status:</label>
-            <span>{{ form.paid_status }}</span>
-          </div>
-          <div class="button-group">
-            <button type="button" class="btn btn-secondary" @click="closeModal">
-              <span class="material-icons">close</span>
-              Close
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import axios from 'axios'
 import { defineProps, defineEmits } from 'vue'
@@ -192,13 +124,8 @@ const props = defineProps({
   purchase: {
     type: Object,
     default: null
-  },
-  mode: {
-    type: String,
-    default: 'entry' // 'entry', 'edit', or 'view'
   }
 })
-
 const siteurl = import.meta.env.VITE_API_URL
 const { notify } = useNotification()
 const suppliersStore = useSuppliersStore()
@@ -227,6 +154,23 @@ const showItemList = ref(false)
 const searchSupplierText = ref('')
 const showSupplierList = ref(false)
 
+// const supplierName = computed(() => {
+//   // const supplier = suppliersStore.suppliers.find(
+//   //   (supplier) => supplier.id === form.value.supplier_id
+//   // )
+//   // return supplier ? supplier.s_name : ''
+//   return props.purchase.s_name
+// })
+
+// const itemList = computed(() => {
+//   // const item = itemlistsStore.itemlists.find(
+//   //   (itemlists) => itemlists.item_list === form.value.item_list
+//   // )
+//   // return item ? `[${item.item_list}] ${item.description}` : ''
+//   const item = '[' + props.purchase.item_list + '] ' + props.purchase.material_desc
+//   return item
+// })
+
 const updateTotalPrice = () => {
   // Calculate total price based on qty and u_price
   form.value.p_price = form.value.qty * form.value.u_price
@@ -237,8 +181,12 @@ onMounted(async () => {
   await itemlistsStore.fetchItemlists()
 
   if (props.purchase) {
+    //searchSupplierText.value = supplierName.value
+    //searchItemText.value = itemList.value
+
     searchSupplierText.value = props.purchase.s_name
     searchItemText.value = '[' + props.purchase.item_list + '] ' + props.purchase.material_desc
+
     console.log(searchSupplierText.value + '--' + searchItemText.value)
   } else {
     const today = new Date().toISOString().substr(0, 10)
@@ -268,6 +216,7 @@ const handleItemBlur = () => {
 
 const selectItem = (item) => {
   form.value.item_list = item.item_list
+  console.log(item.item_list)
   form.value.material_desc = item.description
   form.value.category = item.category
   form.value.paid_status = 3 // 3 mean on credit.
