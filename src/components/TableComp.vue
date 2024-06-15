@@ -56,8 +56,8 @@
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('price')" class="sortable">
-            Price<span v-if="sortByField === 'price'">
+          <th @click="sortBy('p_price')" class="sortable">
+            Price<span v-if="sortByField === 'p_price'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
@@ -76,12 +76,12 @@
       <tbody>
         <tr v-for="item in sortedData" :key="item.PO">
           <td>{{ item.PO }}</td>
-          <td>{{ item.Pdate }}</td>
+          <td>{{ formatDate(item.Pdate) }}</td>
           <td>{{ item.item_list }}</td>
           <td>{{ item.material_desc }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.qty }}</td>
-          <td>{{ item.price }}</td>
+          <td>{{ formatCurrency(item.p_price) }}</td>
           <td>{{ item.user }}</td>
           <td><a href="#">Details</a></td>
         </tr>
@@ -102,6 +102,7 @@
 import Pagination from '@/components/PaginatioN.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, computed, watch, onMounted } from 'vue'
+import { formatCurrency, formatDate } from '@/service/helper'
 import axios from 'axios'
 
 const siteurl = import.meta.env.VITE_API_URL

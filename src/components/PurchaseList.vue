@@ -55,91 +55,11 @@
         @close="closeForm"
         @refresh="fetchPurchases"
       />
-
-      <!-- 
-      <PurchaseForm
-        v-if="isFormVisible"
-        :purchase="selectedPurchase"
-        @close="closeForm"
-        @refresh="fetchPurchases"
-      /> -->
     </div>
   </div>
 </template>
 
 <script setup>
-// import { ref, onMounted } from 'vue'
-// import axios from 'axios'
-// import PurchaseForm from '@/components/PurchaseForm.vue'
-// import { useAuthStore } from '@/stores/auth'
-
-// const purchases = ref([])
-// const isFormVisible = ref(false)
-// const selectedPurchase = ref(null)
-// const authStore = useAuthStore()
-// const siteUrl = import.meta.env.VITE_API_URL
-
-// const fetchPurchases = async () => {
-//   try {
-//     const response = await axios.get(`${siteUrl}/api/purchase/list`, {
-//       params: {
-//         page: 1,
-//         limit: 30,
-//         sortBy: 'PO',
-//         sortOrder: 'asc'
-//       },
-//       headers: {
-//         Accept: 'application/json',
-//         Authorization: `Bearer ${authStore.token}` // Ensure token is formatted correctly
-//       },
-//       withCredentials: true // Include credentials (cookies)
-//     })
-
-//     purchases.value = response.data.data // Assign fetched data to purchases
-//   } catch (error) {
-//     console.error('Error fetching purchases:', error)
-//   }
-// }
-
-// const showAddForm = () => {
-//   selectedPurchase.value = null
-//   isFormVisible.value = true
-// }
-
-// const viewRecord = (purchase) => {
-//   selectedPurchase.value = purchase
-
-//   isFormVisible.value = true
-
-//   //alert(`Viewing record: ${purchase.PO}`)
-// }
-
-// const editRecord = (purchase) => {
-//   selectedPurchase.value = purchase
-//   isFormVisible.value = true
-// }
-
-// const deleteRecord = async (id) => {
-//   alert(`Viewing record: ${id}`)
-//   try {
-//     await axios.delete(`${siteUrl}/api/purchase/delete?PO=${id}`, {
-//       //http://localhost:8000/api/purchase/delete?PO=1015
-//       headers: {
-//         Authorization: `Bearer ${authStore.token}` // Ensure token is formatted correctly
-//       }
-//     })
-//     fetchPurchases()
-//   } catch (error) {
-//     console.error('Error deleting purchase:', error)
-//   }
-// }
-
-// const closeForm = () => {
-//   isFormVisible.value = false
-// }
-
-// onMounted(fetchPurchases)
-
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import PurchaseForm from '@/components/PurchaseForm.vue'

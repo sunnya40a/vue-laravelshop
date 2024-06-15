@@ -26,3 +26,17 @@ export function filterString(inputValue) {
     .replace(/\s+/g, ' ') // Replace multiple spaces with a single space
   return inputValue
 }
+
+export function formatDate(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    year: 'numeric',
+    month: 'short'
+  })
+}
+
+export function formatCurrency(value) {
+  return `Rs ${parseFloat(value).toFixed(2)}`
+}

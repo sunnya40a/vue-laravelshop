@@ -123,50 +123,59 @@
             </button>
           </div>
         </form>
+        <!-- below code is for view only -->
         <div v-else>
           <div class="form-group">
-            <label>PO:</label>
-            <span>{{ form.PO }}</span>
+            <label for="po">PO:</label>
+            <input id="po" v-model="form.PO" type="number" readonly />
           </div>
           <div class="form-group">
-            <label>Date:</label>
-            <span>{{ form.Pdate }}</span>
+            <label for="Pdate">Date:</label>
+            <input id="Pdate" v-model="form.Pdate" type="date" readonly />
           </div>
           <div class="form-group">
-            <label>Item List:</label>
-            <span>{{ searchItemText }}</span>
+            <label for="itemList">Item List:</label>
+            <div class="autocomplete">
+              <input id="itemList" v-model="searchItemText" type="text" readonly />
+            </div>
           </div>
           <div class="form-group">
-            <label>Supplier:</label>
-            <span>{{ searchSupplierText }}</span>
+            <label for="supplier_id">Supplier:</label>
+            <div class="autocomplete">
+              <input id="supplier_id" v-model="searchSupplierText" type="text" readonly />
+            </div>
           </div>
           <div class="form-group">
-            <label>Description:</label>
-            <span>{{ form.material_desc }}</span>
+            <label for="material_desc">Description:</label>
+            <textarea id="material_desc" v-model="form.material_desc" readonly></textarea>
           </div>
           <div class="form-group">
-            <label>Category:</label>
-            <span>{{ form.category }}</span>
+            <label for="category">Category:</label>
+            <input id="category" v-model="form.category" type="text" readonly />
           </div>
           <div class="form-group">
-            <label>Qty:</label>
-            <span>{{ form.qty }}</span>
+            <label for="qty">Qty:</label>
+            <input id="qty" v-model="form.qty" type="number" readonly />
           </div>
           <div class="form-group">
-            <label>Unit:</label>
-            <span>{{ form.unit }}</span>
+            <label for="unit">Unit:</label>
+            <input id="unit" v-model="form.unit" type="text" readonly />
           </div>
           <div class="form-group">
-            <label>Unit Price:</label>
-            <span>{{ form.u_price }}</span>
+            <label for="u_price">Unit Price:</label>
+            <input id="u_price" v-model="form.u_price" type="number" readonly />
           </div>
           <div class="form-group">
-            <label>Total Price:</label>
-            <span>{{ form.p_price }}</span>
+            <label for="price">Total Price:</label>
+            <input id="p_price" v-model="form.p_price" type="number" readonly />
           </div>
           <div class="form-group">
-            <label>Paid Status:</label>
-            <span>{{ form.paid_status }}</span>
+            <label for="paid_status">Paid Status:</label>
+            <input id="paid_status" v-model="form.paid_status" type="number" readonly />
+          </div>
+          <div class="form-group">
+            <label for="payment_status">Payment Status:</label>
+            <input id="payment_status" v-model="form.payment_status" type="text" readonly />
           </div>
           <div class="button-group">
             <button type="button" class="btn btn-secondary" @click="closeModal">
@@ -218,7 +227,10 @@ const form = ref({
   p_price: props.purchase ? props.purchase.p_price : '',
   supplier_id: props.purchase ? props.purchase.supplier_id : '',
   paid_status: props.purchase ? props.purchase.paid_status : '',
+  payment_status: props.purchase ? props.purchase.payment_status : '',
   s_name: props.purchase ? props.purchase.s_name : ''
+
+  //purchase.payment_status
 })
 
 const searchItemText = ref('')
@@ -239,7 +251,6 @@ onMounted(async () => {
   if (props.purchase) {
     searchSupplierText.value = props.purchase.s_name
     searchItemText.value = '[' + props.purchase.item_list + '] ' + props.purchase.material_desc
-    console.log(searchSupplierText.value + '--' + searchItemText.value)
   } else {
     const today = new Date().toISOString().substr(0, 10)
     form.value.Pdate = today

@@ -123,7 +123,7 @@ export default {
 <style lang="scss" scoped>
 aside {
   position: fixed;
-  top: 5px;
+  top: 0.5rem;
   bottom: 0;
   display: flex;
   flex-direction: column;
@@ -132,9 +132,10 @@ aside {
   overflow: hidden;
   //min-height: 80vh;
   height: 100vh;
-  bottom: 5px;
+  bottom: 0.5rem;
   transition: 0.2s ease-in-out;
   box-shadow: 1rem 0 2rem rgba($color: #000000, $alpha: 0.4);
+  z-index: 1000;
 
   .menu-toggle-wrap {
     display: flex;
@@ -277,9 +278,9 @@ aside {
     }
   }
 
-  @media (max-width: 1024px) {
-    position: absolute;
-    z-index: 99;
-  }
+  //@media (max-width: 1024px) {
+  //  position: absolute;
+  //  z-index: 99;
+  //}
 }
 </style>

@@ -54,8 +54,8 @@
               }}</span>
             </span>
           </th>
-          <th @click="sortBy('price')" class="sortable">
-            Price<span v-if="sortByField === 'price'">
+          <th @click="sortBy('p_price')" class="sortable">
+            Price<span v-if="sortByField === 'p_price'">
               <span class="material-symbols-outlined">{{
                 sortDirection === 'asc' ? 'arrow_drop_up' : 'arrow_drop_down'
               }}</span>
@@ -81,7 +81,7 @@
           <td>{{ item.material_desc }}</td>
           <td>{{ item.category }}</td>
           <td>{{ item.qty }}</td>
-          <td>{{ item.price }}</td>
+          <td>{{ formatCurrency(item.p_price) }}</td>
           <td>{{ item.user }}</td>
           <td><a href="#">Details</a></td>
         </tr>
@@ -100,6 +100,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { formatCurrency } from '@/service/helper'
 import Pagination from '@/components/PaginatioN.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import DateRange from '@/components/DateRange.vue'

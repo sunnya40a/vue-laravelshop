@@ -113,7 +113,7 @@ watch(
 :root {
   font-size: 62.5%;
   --sidebar-width: 2rem;
-  --expanded-sidebar-width: 320px;
+  --expanded-sidebar-width: 32rem;
   --menubackground: #1d5d9b;
   --menutext: #e0e0e0;
   --headertext: #00ffff;
@@ -153,7 +153,7 @@ button {
     flex: 1 1 0;
     padding: 2rem;
 
-    @media (max-width: 1024px) {
+    @media (max-width: 102.4rem) {
       padding-left: 6rem;
     }
   }
