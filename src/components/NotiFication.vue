@@ -55,6 +55,17 @@ const removeNotification = (id) => {
   background-color: #4caf50;
 }
 
+.notification.warning {
+  background-color: #e6e943;
+  color: #f44336;
+  font-weight: bolder;
+}
+
+.notification.login {
+  background-color: #4caf50;
+  font-weight: bolder;
+}
+
 .notification.error {
   background-color: #f44336;
   font-weight: bolder;

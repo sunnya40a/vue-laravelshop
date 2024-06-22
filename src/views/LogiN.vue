@@ -58,7 +58,7 @@ const input = ref({
 const isPasswordVisible = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
-const notify = useNotification()
+const { notify } = useNotification()
 const siteurl = import.meta.env.VITE_API_URL
 
 const togglePasswordVisibility = () => {
@@ -116,13 +116,25 @@ const login = async () => {
       }
       cryptoService.saveData(authindex, 'userindex')
       router.replace({ name: 'dashboard' })
+      notify('Welcome ' + input.value.username, 'login')
     } else {
       notify('Authentication failed. Please check your credentials.', 'error')
       console.error('Authentication failed. Status code:', response.status)
     }
   } catch (error) {
-    notify('An error occurred during authentication.', 'error')
-    console.error('An error occurred during authentication:', error)
+    if (error.response) {
+      // Check for the status code in the error response
+      if (error.response.status === 401) {
+        notify('Unauthorized. Please check your username and password.', 'error')
+      } else {
+        notify('An error occurred during authentication.', 'error')
+      }
+      console.error('Error response status:', error.response.status)
+      console.error('Error response data:', error.response.data)
+    } else {
+      notify('An error occurred during authentication.', 'error')
+      console.error('An error occurred during authentication:', error)
+    }
   }
 }
 </script>
