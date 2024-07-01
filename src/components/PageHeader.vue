@@ -50,7 +50,7 @@ watch(
   justify-content: left;
   align-items: center;
   background-color: #a8d3a2; /* Light background color */
-  padding: 20px 70px;
+  padding: 10px 70px;
   border-radius: 0px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   margin-bottom: 10px;

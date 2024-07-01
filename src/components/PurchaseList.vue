@@ -1,6 +1,12 @@
 <template>
   <div class="container">
-    <div class="header">
+    <div class="bar">
+      <div>
+        <SearchComp @search="handleSearchText" />
+      </div>
+      <div>
+        <DateRange @date-range-selected="Daterange" />
+      </div>
       <button class="add-record-btn" @click="showAddForm">Add Record</button>
     </div>
     <div class="table-container">
@@ -47,6 +53,14 @@
           </tr>
         </tbody>
       </table>
+      <Pagination
+        :current-page="currentPage"
+        :total-page-count="totalPageCount"
+        :per-page="limit"
+        :totalRecords="totalRecords"
+        @page-change="handlePageChange"
+        @per-page-change="handlePerPageChange"
+      />
       <PurchaseForm
         v-if="isFormVisible"
         :purchase="selectedPurchase"
@@ -71,10 +85,14 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import PurchaseForm from '@/components/PurchaseForm.vue'
+import SearchComp from '@/components/SearchComp.vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
 import DialogBox from '@/components/DialogBox.vue'
 import useDialog from '@/service/useDialog'
+import Pagination from '@/components/PaginatioN.vue'
+import DateRange from '@/components/DateRange.vue'
+import { format } from 'date-fns'
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
@@ -93,15 +111,28 @@ const selectedPurchase = ref(null)
 const formMode = ref('entry') // 'entry', 'edit', 'view'
 const authStore = useAuthStore()
 const siteUrl = import.meta.env.VITE_API_URL
+const currentPage = ref(1)
+const limit = ref(10)
+const searchQuery = ref('')
+const sortByField = ref('PO')
+const fromDate = ref('')
+const toDate = ref('')
+const sortDirection = ref('asc')
+
+let totalRecords = ref(0)
+let totalPageCount = ref(1)
 
 const fetchPurchases = async () => {
   try {
     const response = await axios.get(`${siteUrl}/api/purchase/list`, {
       params: {
-        page: 1,
-        limit: 10,
-        sortBy: 'Pdate',
-        sortOrder: 'desc'
+        page: currentPage.value,
+        limit: limit.value,
+        search: searchQuery.value,
+        datef: fromDate.value,
+        datee: toDate.value,
+        sortBy: sortByField.value,
+        sortOrder: sortDirection.value
       },
       headers: {
         Accept: 'application/json',
@@ -110,9 +141,27 @@ const fetchPurchases = async () => {
       withCredentials: true
     })
     purchases.value = response.data.data
+    totalRecords.value = response.data.TotalRecords
+    totalPageCount.value = Math.ceil(response.data.TotalRecords / limit.value)
   } catch (error) {
     console.error('Error fetching purchases:', error)
   }
+}
+
+const handlePageChange = (pageNumber) => {
+  currentPage.value = pageNumber
+  fetchPurchases()
+}
+
+const handlePerPageChange = (perPage) => {
+  limit.value = perPage
+  currentPage.value = 1
+  fetchPurchases()
+}
+
+const handleSearchText = (searchText) => {
+  searchQuery.value = searchText
+  fetchPurchases()
 }
 
 const showAddForm = () => {
@@ -135,6 +184,33 @@ const editRecord = (purchase) => {
 
 const closeForm = () => {
   isFormVisible.value = false
+}
+
+const Daterange = ({ startDate, endDate }) => {
+  // Ensure startDate and endDate are valid date strings
+  if (startDate && endDate) {
+    const isValidDate = (date) => date instanceof Date && !isNaN(date)
+
+    if (!isValidDate(startDate) || !isValidDate(endDate)) {
+      console.error('Invalid date format')
+      return
+    }
+
+    // Format dates to YYYY-MM-DD format
+    const formattedStartDate = format(startDate, 'yyyy-MM-dd')
+    const formattedEndDate = format(endDate, 'yyyy-MM-dd')
+
+    //console.log('From ->' + formattedStartDate + '-- To->' + formattedEndDate)
+
+    fromDate.value = formattedStartDate
+    toDate.value = formattedEndDate
+  } else {
+    fromDate.value = ''
+    toDate.value = ''
+  }
+  // Fetch data using the updated date range
+  currentPage.value = 1
+  fetchPurchases()
 }
 
 const handleAfterDialogConfirm = async (option) => {
@@ -176,32 +252,54 @@ onMounted(fetchPurchases)
   margin-top: 0;
   padding-left: 40px;
 
-  .header {
+  .bar {
     display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    margin-bottom: 5px;
+    justify-content: space-between; /* Align items horizontally with space between */
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px, 0px;
+  }
 
-    .add-record-btn {
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      background-color: #007bff;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+  .searcharea {
+    flex: 1; /* Allow search area to grow and fill available space */
 
-      &:hover {
-        background-color: #0056b3;
-      }
+    .search-box {
+      height: 30px; /* Set desired height */
+      padding: 0 10px; /* Add padding for better look */
+      font-size: 16px; /* Increase font size for better readability */
+      border: 1px solid #ccc; /* Add border */
+      border-radius: 10px; /* Add border radius */
+    }
+    .search-icon {
+      position: relative;
+      top: 20px;
+      left: -30px;
+      transform: translateY(-40%);
+      font-size: 25px;
+      color: #aaa; /* Adjust icon color */
+      pointer-events: none; /* Ensure icon is not clickable */
+    }
+  }
+
+  .add-record-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: #0056b3;
     }
   }
 
   .table-container {
     display: flex;
     flex-direction: column;
-    height: 68vh;
+    height: 80vh;
     width: 100%;
     overflow: auto;
 
