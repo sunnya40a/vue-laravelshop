@@ -27,6 +27,12 @@ export const useStore = defineStore({
         link: '/category'
       },
       {
+        title: 'Items Entry',
+        icon: 'address-card',
+        open: false,
+        link: '/itemsentry'
+      },
+      {
         title: 'Table',
         icon: 'address-card',
         open: false,

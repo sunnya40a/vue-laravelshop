@@ -23,6 +23,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/itemsentry',
+      name: 'itemsentry',
+      component: () => import('../views/ItemsEntry.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/ptable',
       name: 'ptable',
       component: () => import('../views/pluginTable.vue'),
@@ -37,7 +43,7 @@ const router = createRouter({
     {
       path: '/category',
       name: 'category',
-      component: () => import('../views/CategorY.vue'),
+      component: () => import('../views/EntryEditCategory.vue'),
       meta: { requiresAuth: true }
     },
     {

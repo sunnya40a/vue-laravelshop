@@ -116,10 +116,10 @@
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly required />
           </div>
-          <div class="form-group">
-            <label for="paid_status">Paid Status:</label>
+          <!-- <div class="form-group">
+            <label for="paid_status">Payment Status::</label>
             <input id="paid_status" v-model="form.paid_status" type="number" readonly required />
-          </div>
+          </div> -->
           <div class="button-group">
             <button type="submit" class="btn btn-primary" v-if="mode !== 'view'">
               <span class="material-icons">save</span>
@@ -178,10 +178,10 @@
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly />
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="paid_status">Paid Status:</label>
             <input id="paid_status" v-model="form.paid_status" type="number" readonly />
-          </div>
+          </div> -->
           <div class="form-group">
             <label for="payment_status">Payment Status:</label>
             <input id="payment_status" v-model="form.payment_status" type="text" readonly />
