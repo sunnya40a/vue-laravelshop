@@ -1,6 +1,5 @@
 <template>
   <div class="modal" v-if="visible">
-    <font-awesome-icon icon="trash" class="fa-icons" /> Delete
     <div class="modal-content">
       <div class="modal-header">
         <h2>{{ title }}</h2>
