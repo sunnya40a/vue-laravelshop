@@ -24,12 +24,8 @@
             placeholder="Enter Password"
             autocomplete="current-password"
           />
-          <span
-            class="password-icon material-symbols-outlined"
-            :class="{ visibility_off: !isPasswordVisible }"
-            @click="togglePasswordVisibility"
-          >
-            {{ isPasswordVisible ? 'visibility' : 'visibility_off' }}
+          <span class="password-icon" @click="togglePasswordVisibility">
+            <font-awesome-icon :icon="eyeIcon" />
           </span>
         </div>
       </div>
@@ -44,10 +40,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { cryptoService } from '@/service/security'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import useNotification from '@/service/notificationService'
 import axios from 'axios'
 
@@ -60,6 +58,10 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { notify } = useNotification()
 const siteurl = import.meta.env.VITE_API_URL
+
+// Define computed property for the eye icon
+//const eyeIcon = computed(() => (isPasswordVisible.value ? faEye : faEyeSlash))
+const eyeIcon = computed(() => (isPasswordVisible.value ? faEyeSlash : faEye))
 
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
@@ -147,33 +149,33 @@ const login = async () => {
   justify-content: center;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 20px;
+  padding: 2rem;
   background-color: #f5f5f5;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.1);
 
   h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
     color: #333;
   }
 
   .form-inputs {
-    margin-bottom: 15px;
+    margin-bottom: 1.5rem;
 
     label {
       display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
       color: #555;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
+      padding: 1rem;
+      border: 0.1rem solid #ccc;
+      border-radius: 0.4rem;
+      font-size: 1.4rem;
 
       &:focus {
         outline: none;
@@ -188,32 +190,32 @@ const login = async () => {
     .password-icon {
       position: absolute;
       top: 50%;
-      right: 10px;
+      right: 1rem;
       transform: translateY(-50%);
       cursor: pointer;
-      font-size: 18px; // Adjust the font size as needed
+      font-size: 1.8rem; // Adjust the font size as needed
     }
   }
 
   .remember-me {
-    margin-top: 10px; /* Adjust spacing as needed */
+    margin-top: 1rem; /* Adjust spacing as needed */
 
     label {
-      font-size: 14px;
+      font-size: 1.4rem;
       color: #555;
-      margin-left: 5px;
+      margin-left: 0.5rem;
     }
   }
 
   button {
-    padding: 10px;
+    padding: 1rem;
     background-color: #007bff;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.4rem;
     cursor: pointer;
-    font-size: 16px;
-    width: 150px; /* Adjust as needed */
+    font-size: 1.6rem;
+    width: 15rem; /* Adjust as needed */
 
     &:hover {
       background-color: #0056b3;
@@ -222,7 +224,7 @@ const login = async () => {
 
   .error-message {
     color: red;
-    margin-top: 10px;
+    margin-top: 1rem;
   }
 }
 </style>

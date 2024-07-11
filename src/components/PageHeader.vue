@@ -1,7 +1,7 @@
 <template>
   <div class="page-header">
     <div class="header-content">
-      <span class="material-icons header-icon">{{ icon }}</span>
+      <font-awesome-icon :icon="icon" class="header-icon" />
       <h1 class="header-title">{{ title }}</h1>
     </div>
   </div>
@@ -9,6 +9,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // Define props
 const props = defineProps({
@@ -17,7 +18,7 @@ const props = defineProps({
     required: true
   },
   icon: {
-    type: String,
+    type: Object, // Changed from String to Object for Font Awesome icons
     required: true
   }
 })
@@ -43,8 +44,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-
 .page-header {
   display: flex;
   justify-content: left;
@@ -55,6 +54,7 @@ watch(
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   margin-bottom: 10px;
 }
+
 .header-content {
   display: flex;
   align-items: center;
@@ -70,9 +70,8 @@ watch(
 
 .header-title {
   font-size: 24px; /* Adjust the size as needed */
-  color: #333;
+  color: #007bff; /* Title color */
   flex-grow: 1;
   text-align: left;
-  color: #007bff; /* Title color */
 }
 </style>

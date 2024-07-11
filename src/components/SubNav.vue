@@ -9,16 +9,15 @@
             'active-link': checkActive(index, item.link)
           }"
         >
-          <i
+          <font-awesome-icon
             v-if="item.subnav"
-            class="material-symbols-outlined dropdown-icon"
+            icon="caret-down"
+            class="dropdown-icon"
             :class="{
               'rotate-down': !item.open,
               'rotate-up': item.open
             }"
-          >
-            arrow_drop_down
-          </i>
+          />
           <router-link v-if="item.link" :to="item.link">
             <span>{{ item.title }}</span>
           </router-link>
@@ -32,7 +31,11 @@
 
 <script>
 import { useStore } from '@/stores/navigation'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 export default {
+  components: {
+    FontAwesomeIcon
+  },
   name: 'SubNav',
   props: ['list', 'depth'],
 
@@ -157,26 +160,21 @@ export default {
       position: relative;
       display: flex;
       align-items: center;
-      font-size: 1.6rem;
+      font-size: 1.3rem;
       text-align: left;
       justify-content: space-between;
       //padding: 1rem 0.5rem 1rem 3.2rem;
-      height: 3.5rem;
+      height: 3rem;
       transition: background-color 0.3s ease;
       &:hover {
         background-color: var(--menuhovercolor);
         transition: background-color 0.5s ease;
       }
       .dropdown-icon {
-        /*font-variation-settings:
-                    'FILL' 0,
-                    'weight' 400,
-                    'GRAD' 100,
-                    'opsz' 24;*/
-        font-family: 'Material Symbols Outlined';
         color: var(--dropdownmenucolor);
-        font-size: 3rem;
+        font-size: 2rem;
         text-align: right;
+        margin-left: 0.5rem;
         //border-radius: 90%;
 
         &.rotate-down {
@@ -221,7 +219,7 @@ export default {
           position: relative;
           display: flex;
           align-items: center;
-          font-size: 1.6rem;
+          font-size: 1.3rem;
           text-align: left;
           justify-content: space-between;
           //padding: 1rem 0.5rem 1rem 5.8rem;

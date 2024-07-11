@@ -3,7 +3,7 @@
   <aside :class="{ 'is-expanded': is_expanded }">
     <div class="menu-toggle-wrap">
       <button class="menu-toggle" @click="toggleMenu">
-        <span class="material-symbols-outlined">keyboard_double_arrow_right</span>
+        <font-awesome-icon icon="angles-right" class="fa-icons" />
       </button>
     </div>
     <div class="menu">
@@ -18,21 +18,21 @@
                 'active-link': checkActive(index, item.link)
               }"
             >
-              <i v-if="item.icon" class="material-symbols-outlined">home</i>
+              <font-awesome-icon v-if="item.icon" :icon="item.icon" class="fa-icons" />
               <router-link v-if="item.link" :to="item.link">
                 <span>{{ item.title }}</span>
               </router-link>
               <span v-else>{{ item.title }}</span>
-              <i
+              <!-- Replace material icon with Font Awesome icon -->
+              <font-awesome-icon
                 v-if="item.subnav"
-                class="material-symbols-outlined dropdown-icon"
+                icon="caret-down"
+                class="dropdown-icon"
                 :class="{
                   'rotate-down': !item.open,
                   'rotate-up': item.open
                 }"
-              >
-                arrow_drop_down
-              </i>
+              />
             </div>
             <SubNav v-if="item.subnav" :list="item" :depth="0" />
             <!-- depth is for indenting submenu but not initialized. future feature. -->
@@ -47,9 +47,11 @@ import { computed } from 'vue'
 import SidebarHeader from './SidebarHeader.vue'
 import SubNav from './SubNav.vue'
 import { useStore } from '@/stores/navigation'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 export default {
   components: {
+    FontAwesomeIcon,
     SidebarHeader,
     SubNav
   },
@@ -152,21 +154,15 @@ aside {
       margin-left: auto;
       top: 1rem;
 
-      .material-symbols-outlined {
-        /*font-variation-settings:
-                    'FILL' 1,
-                    'wght' 400,
-                    'GRAD' 0,
-                    'opsz' 24;*/
-        font-family: 'Material Symbols Outlined';
-        font-size: 3rem;
+      .fa-icons {
+        font-size: 2rem;
         margin-right: 0.5rem;
         color: var(--menuiconcolor);
         transition: 0.2s ease-out;
       }
 
       &:hover {
-        .material-symbols-outlined {
+        .fa-icons {
           color: var(--menuhovercolor);
           transform: translateX(0.5rem);
         }
@@ -196,11 +192,11 @@ aside {
         .title {
           display: flex;
           align-items: center;
-          font-size: 1.6rem;
+          font-size: 1.4rem;
           text-align: left;
           justify-content: space-between;
-          padding: 1rem 0.5rem 1rem 0.5rem;
-          height: 3.5rem;
+          padding: 1rem 0.5rem;
+          height: 3rem;
           transition: background-color 0.3s ease;
 
           &:hover {
@@ -208,27 +204,15 @@ aside {
             transition: background-color 0.5s ease;
           }
 
-          .material-symbols-outlined {
-            /*font-variation-settings:
-                            'FILL' 0,
-                            'wght' 200,
-                            'GRAD' 100,
-                            'opsz' 24;*/
-            font-family: 'Material Symbols Outlined';
-            font-size: 2.5rem;
+          .fa-icons {
+            font-size: 1.5rem;
             justify-content: center;
             color: var(--menuiconcolor);
             margin-left: auto;
           }
           .dropdown-icon {
-            /*font-variation-settings:
-                            'FILL' 0,
-                            'wght' 400,
-                            'GRAD' 100,
-                            'opsz' 24;*/
-            font-family: 'Material Symbols Outlined';
             color: var(--dropdownmenucolor);
-            font-size: 3rem;
+            font-size: 2rem;
 
             &.rotate-down {
               transform: rotate(0deg);

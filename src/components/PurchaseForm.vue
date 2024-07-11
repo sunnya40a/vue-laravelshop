@@ -9,7 +9,6 @@
         <form @submit.prevent="submitForm" v-if="mode !== 'view'">
           <div class="form-group">
             <label for="po">PO:</label>
-            <!-- <input id="po" v-model="form.PO" type="number" required :readonly="mode === 'view'" /> -->
             <input
               id="po"
               v-model="form.PO"
@@ -116,17 +115,13 @@
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly required />
           </div>
-          <!-- <div class="form-group">
-            <label for="paid_status">Payment Status::</label>
-            <input id="paid_status" v-model="form.paid_status" type="number" readonly required />
-          </div> -->
           <div class="button-group">
             <button type="submit" class="btn btn-primary" v-if="mode !== 'view'">
-              <span class="material-icons">save</span>
+              <font-awesome-icon icon="floppy-disk" class="fa-icons" />
               {{ purchase ? 'Update' : 'Save' }}
             </button>
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <span class="material-icons">cancel</span>
+              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
               Cancel
             </button>
           </div>
@@ -188,7 +183,7 @@
           </div>
           <div class="button-group">
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <span class="material-icons">close</span>
+              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
               Close
             </button>
           </div>
@@ -205,7 +200,7 @@ import { useSuppliersStore } from '@/stores/suppliers'
 import { useAuthStore } from '@/stores/auth'
 import { useItemlistsStore } from '@/stores/itemlists'
 import useNotification from '@/service/notificationService'
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 const props = defineProps({
   purchase: {
     type: Object,
@@ -516,6 +511,9 @@ const submitForm = async () => {
     &:hover {
       background-color: #5a6268;
     }
+  }
+  .fa-icons {
+    font-size: 20px;
   }
 }
 </style>

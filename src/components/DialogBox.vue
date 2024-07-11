@@ -1,5 +1,6 @@
 <template>
   <div class="modal" v-if="visible">
+    <font-awesome-icon icon="trash" class="fa-icons" /> Delete
     <div class="modal-content">
       <div class="modal-header">
         <h2>{{ title }}</h2>
@@ -15,7 +16,7 @@
           :class="getButtonClass(button)"
           class="btn"
         >
-          <span class="material-symbols-outlined">{{ getButtonIcon(button) }}</span>
+          <font-awesome-icon :icon="getButtonIcon(button)" class="icon" />
           {{ button }}
         </button>
       </div>
@@ -24,7 +25,11 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 export default {
+  components: {
+    FontAwesomeIcon
+  },
   props: {
     title: String,
     message: String,
@@ -50,13 +55,13 @@ export default {
     getButtonIcon(button) {
       switch (button.toLowerCase()) {
         case 'yes':
-          return 'check_circle'
+          return ['fas', 'check-circle'] // Font Awesome icon class for "yes" button
         case 'no':
-          return 'cancel'
+          return ['fas', 'times-circle'] // Font Awesome icon class for "no" button
         case 'cancel':
-          return 'close'
+          return ['fas', 'times'] // Font Awesome icon class for "cancel" button
         default:
-          return 'density_medium'
+          return ['fas', 'ellipsis-h'] // Default Font Awesome icon class
       }
     }
   }
@@ -142,8 +147,9 @@ export default {
   font-size: 16px;
   transition: background-color 0.3s ease;
 
-  .material-symbols-outlined {
+  .icon {
     margin-right: 5px;
+    font-size: 20px;
   }
 }
 
@@ -156,6 +162,7 @@ export default {
   background-color: #dc3545;
   color: white;
 }
+
 .btn-cancel {
   background-color: #6c757d;
   color: white;

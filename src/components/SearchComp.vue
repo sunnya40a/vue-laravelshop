@@ -12,13 +12,14 @@
         placeholder="Search..."
         :class="{ focused: isFocused }"
       />
-      <span class="material-symbols-outlined">search</span>
+      <font-awesome-icon icon="magnifying-glass" class="fa-icons" />
     </div>
   </form>
 </template>
 
 <script setup>
 import { defineEmits, ref } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const emit = defineEmits(['search'])
 const searchText = ref('')
@@ -78,13 +79,13 @@ const handleInput = (e) => {
   border-color: #007bff; /* Blue color when input is focused */
 }
 
-.material-symbols-outlined {
+.fa-icons {
   position: absolute;
-  right: 0.4rem; /* Adjust icon position */
+  right: 0.8rem; /* Adjust icon position */
   top: 50%; /* Align icon vertically */
   transform: translateY(-50%);
-  font-size: 2.4rem; /* Adjust icon size */
+  font-size: 1.6rem; /* Adjust icon size */
   color: #555; /* Adjust icon color */
-  cursor: pointer;
+  /*cursor: pointer;*/
 }
 </style>

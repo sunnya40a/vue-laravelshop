@@ -1,5 +1,6 @@
 <template>
-  <PageHeader title="Category List" icon="shopping_cart" />
+  <!-- PageHeader component with Font Awesome icon -->
+  <PageHeader title="Category List" :icon="['fas', 'cart-shopping']" />
   <div id="CategoryList">
     <CategoryList />
   </div>
@@ -11,13 +12,7 @@ import CategoryList from '@/components/CategoryList.vue'
 </script>
 
 <style lang="scss" scoped>
-#Header {
-  margin: 20px 10px;
-  text-align: center;
-  font-size: 14px;
-  font-style: Bold;
-}
-#PurchaseList {
-  margin: 10px; /* Adds margin on all sides */
+#CategoryList {
+  margin: 1rem; /* Adds margin on all sides */
 }
 </style>

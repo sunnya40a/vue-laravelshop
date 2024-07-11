@@ -7,7 +7,9 @@
       <div>
         <DateRange @date-range-selected="Daterange" />
       </div>
-      <button class="add-record-btn" @click="showAddForm">Add Record</button>
+      <button class="add-record-btn" @click="showAddForm">
+        <font-awesome-icon icon="plus" class="fa-icons" />Add Record
+      </button>
     </div>
     <div class="table-container">
       <table class="purchase-table">
@@ -41,13 +43,13 @@
             <td>{{ purchase.user }}</td>
             <td class="action-buttons">
               <button class="action-btn view-btn" @click="viewRecord(purchase)">
-                <span class="material-icons">visibility</span> View
+                <font-awesome-icon icon="magnifying-glass" class="fa-icons" /> View
               </button>
               <button class="action-btn edit-btn" @click="editRecord(purchase)">
-                <span class="material-icons">edit</span> Edit
+                <font-awesome-icon icon="pen-to-square" class="fa-icons" /> Edit
               </button>
               <button class="action-btn delete-btn" @click="openConfirmationDialogbox(purchase.PO)">
-                <span class="material-icons">delete</span> Delete
+                <font-awesome-icon icon="trash" class="fa-icons" /> Delete
               </button>
             </td>
           </tr>
@@ -93,6 +95,7 @@ import useDialog from '@/service/useDialog'
 import Pagination from '@/components/PaginatioN.vue'
 import DateRange from '@/components/DateRange.vue'
 import { format } from 'date-fns'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
@@ -290,6 +293,9 @@ onMounted(fetchPurchases)
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    .fa-icons {
+      margin-right: 10px;
+    }
 
     &:hover {
       background-color: #0056b3;
@@ -376,7 +382,7 @@ onMounted(fetchPurchases)
           color: white;
         }
 
-        .material-icons {
+        .fa-icons {
           margin-right: 5px;
         }
       }

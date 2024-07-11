@@ -24,11 +24,11 @@
           </div>
           <div class="button-group">
             <button type="submit" class="btn btn-primary">
-              <span class="material-icons">save</span>
+              <font-awesome-icon icon="floppy-disk" class="fa-icons" />
               {{ category ? 'Update' : 'Save' }}
             </button>
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <span class="material-icons">cancel</span>
+              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
               Cancel
             </button>
           </div>
@@ -46,7 +46,7 @@
           </div>
           <div class="button-group">
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <span class="material-icons">close</span>
+              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
               Close
             </button>
           </div>
@@ -61,6 +61,7 @@ import axios from 'axios'
 import { defineProps, defineEmits, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const props = defineProps({
   category: {
@@ -270,6 +271,9 @@ const submitForm = async () => {
     &:hover {
       background-color: #5a6268;
     }
+  }
+  .fa-icons {
+    font-size: 20px;
   }
 }
 </style>

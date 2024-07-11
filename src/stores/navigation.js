@@ -7,13 +7,13 @@ export const useStore = defineStore({
       {
         title: 'Dashboard',
         open: false,
-        icon: 'address-card',
+        icon: 'house-chimney',
         link: '/home'
       },
       {
         title: 'Purchase',
         open: false,
-        icon: 'address-card',
+        icon: 'house-chimney',
         subnav: [
           { title: 'Purchase Entry', link: '/pentry' },
           { title: 'Purchase View', link: '/purchase' },
@@ -22,32 +22,32 @@ export const useStore = defineStore({
       },
       {
         title: 'Category',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/category'
       },
       {
         title: 'Items Entry',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/itemsentry'
       },
       {
         title: 'Table',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/table'
       },
       {
         title: 'Plug Table',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/ptable'
       },
       {
         title: 'Sumenu Test',
         open: false,
-        icon: 'address-card',
+        icon: 'house-chimney',
         subnav: [
           {
             title: '2nd level',
@@ -95,13 +95,13 @@ export const useStore = defineStore({
       },
       {
         title: 'Logout',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/logout'
       },
       {
         title: 'About',
-        icon: 'address-card',
+        icon: 'house-chimney',
         open: false,
         link: '/about'
       }

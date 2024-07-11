@@ -9,52 +9,55 @@
       </select>
     </div>
     <div class="pagination">
-      <!-- Pagination items here -->
+      <!-- Page Number Display -->
+      <span v-if="totalRecords > 0" class="pagenumber">
+        Page {{ currentPage }} of {{ totalPageCount }}
+      </span>
+      <span class="Records">(Total Records: {{ totalRecords }})</span>
+
       <!-- First Page -->
-      <span v-if="totalRecords > 0" class="pagenumber"
-        >Page {{ currentPage }} of {{ totalPageCount }}</span
-      >
-      <span class="Records">(Total Records:{{ totalRecords }})</span>
       <li class="page-item" :class="{ disabled: currentPage === 1 || totalRecords === 0 }">
-        <a class="page-link" href="#" @click.prevent="firstPage">
-          <span class="material-symbols-outlined"> first_page </span>
-          <!-- First Page Icon -->
+        <a class="page-link" href="#" @click.prevent="firstPage" aria-label="First Page">
+          <font-awesome-icon icon="fa-solid fa-backward-fast" class="fa-icons" />
         </a>
       </li>
+
       <!-- Previous Page -->
       <li class="page-item" :class="{ disabled: currentPage === 1 || totalRecords === 0 }">
-        <a class="page-link" href="#" @click.prevent="prevPage">
-          <span class="material-symbols-outlined"> chevron_left </span>
-          <!-- Previous Page Icon -->
+        <a class="page-link" href="#" @click.prevent="prevPage" aria-label="Previous Page">
+          <font-awesome-icon icon="fa-solid fa-backward-step" class="fa-icons" />
         </a>
       </li>
-      <!-- Pagination links -->
+
+      <!-- Pagination Links -->
       <li
         v-for="pageNumber in totalPageCount"
         :key="pageNumber"
         class="page-item"
         :class="{ active: pageNumber === currentPage }"
       >
-        <a class="page-link" href="#" @click.prevent="changePage(pageNumber)">{{ pageNumber }}</a>
+        <a class="page-link" href="#" @click.prevent="changePage(pageNumber)">
+          {{ pageNumber }}
+        </a>
       </li>
+
       <!-- Next Page -->
       <li
         class="page-item"
         :class="{ disabled: currentPage === totalPageCount || totalRecords === 0 }"
       >
-        <a class="page-link" href="#" @click.prevent="nextPage">
-          <span class="material-symbols-outlined"> chevron_right </span>
-          <!-- Next Page Icon -->
+        <a class="page-link" href="#" @click.prevent="nextPage" aria-label="Next Page">
+          <font-awesome-icon icon="fa-solid fa-forward-step" class="fa-icons" />
         </a>
       </li>
+
       <!-- Last Page -->
       <li
         class="page-item"
         :class="{ disabled: currentPage === totalPageCount || totalRecords === 0 }"
       >
-        <a class="page-link" href="#" @click.prevent="lastPage">
-          <span class="material-symbols-outlined"> last_page </span>
-          <!-- Last Page Icon -->
+        <a class="page-link" href="#" @click.prevent="lastPage" aria-label="Last Page">
+          <font-awesome-icon icon="forward-fast" class="fa-icons" />
         </a>
       </li>
     </div>
@@ -63,6 +66,7 @@
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const props = defineProps({
   currentPage: {
@@ -119,90 +123,94 @@ const perPageChanged = (event) => {
 
 <style lang="scss" scoped>
 .navigation-container {
-  display: flex; /* Make the container flex */
-  justify-content: space-between; /* Align items at each end of the container */
+  display: flex;
+  justify-content: space-between;
   background-color: #9df1af;
   align-items: center;
-  margin-top: 0px;
-  // margin-left: 50px;
+  padding: 0.5rem 1rem; /* Added padding */
+  border-radius: 0.5rem; /* Added border radius */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Added shadow */
 
-  div {
-    // Styling for the child divs
-    padding: 0.2rem; // Adjust padding as needed
-  }
   .results-per-page {
     display: flex;
     align-items: center;
     font-size: 1rem;
-    /* ... other styles */
+
     label {
       margin-right: 0.5rem;
+      font-weight: bold;
     }
 
     select {
-      padding: 0.25rem; /* Make the select smaller */
-      font-size: 1.2rem; /* Reduce font size for the select */
+      padding: 0.25rem;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 0.25rem;
+      background-color: #fff;
     }
   }
 
   .pagination {
-    display: flex; /* Make the pagination items flex */
-    list-style: none;
+    display: flex;
     align-items: center;
+    list-style: none;
     padding: 0;
-    font-size: 1.2rem;
+
     .Records {
       font-size: 1.2rem;
       color: gray;
-      margin-right: 1rem;
-      margin-left: 1rem;
+      margin: 0 1rem;
     }
+
     .pagenumber {
-      font-size: 1rem;
+      font-size: 1.2rem;
       color: gray;
     }
-  }
 
-  .page-item {
-    margin: 0rem;
-  }
+    .page-item {
+      margin: 0;
 
-  .page-link {
-    padding: 0rem 1rem;
-    text-decoration: none;
-    color: #007bff;
-    //border: 1px solid #dee2e6;
-    //border-radius: 4px;
-  }
+      .page-link {
+        display: flex;
+        align-items: center;
+        padding: 0.2rem 1rem;
+        text-decoration: none;
+        font-size: 1.2rem;
+        color: #007bff;
+        //border: 1px solid #ddd;
+        //border-radius: 0.25rem;
+        //background-color: #9df1af;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
 
-  .page-link:hover {
-    //background-color: #f2f2f2;*/
-    border-radius: 0.4rem;
-  }
+        //&:hover {
+        //  background-color: #f2f2f2;
+        //  color: #0056b3;
+        //}
 
-  .page-link:focus {
-    outline: none;
-  }
+        &:focus {
+          outline: none;
+        }
 
-  .disabled {
-    pointer-events: none;
-    opacity: 0.5;
-  }
+        .fa-icons {
+          font-size: 1.4rem;
+          margin-right: 0.1rem;
+        }
+      }
 
-  .page-item.active .page-link {
-    background-color: #36a05e;
-    color: white;
-    pointer-events: none;
-    font-size: 1.3rem;
-  }
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
 
-  /* Style for the records per page dropdown */
-  label {
-    margin-right: 1rem;
-  }
-
-  select {
-    padding: 0.5rem;
+      &.active .page-link {
+        background-color: #36a05e;
+        color: white;
+        pointer-events: none;
+        font-size: 1.2rem;
+      }
+    }
   }
 }
 </style>

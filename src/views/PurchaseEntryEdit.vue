@@ -1,5 +1,5 @@
 <template>
-  <PageHeader title="Purchase List" icon="shopping_cart" />
+  <PageHeader title="Purchase List" :icon="['fas', 'cart-shopping']" />
   <div id="PurchaseList">
     <PurchaseList />
   </div>

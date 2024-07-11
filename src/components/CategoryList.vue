@@ -4,7 +4,9 @@
       <div>
         <SearchComp @search="handleSearchText" />
       </div>
-      <button class="add-record-btn" @click="showAddForm">Add Record</button>
+      <button class="add-record-btn" @click="showAddForm">
+        <font-awesome-icon icon="plus" class="fa-icons" /> Add Record
+      </button>
     </div>
     <div class="table-container">
       <table class="list-table">
@@ -24,16 +26,17 @@
             <td>{{ category.description }}</td>
             <td class="action-buttons">
               <button class="action-btn view-btn" @click="viewRecord(category)">
-                <span class="material-icons">visibility</span> View
+                <!-- <span class="fa-icons"><font-awesome-icon :icon="faMagnifyingGlass" /></span> View -->
+                <font-awesome-icon icon="magnifying-glass" class="fa-icons" /> View
               </button>
               <button class="action-btn edit-btn" @click="editRecord(category)">
-                <span class="material-icons">edit</span> Edit
+                <font-awesome-icon icon="pen-to-square" class="fa-icons" /> Edit
               </button>
               <button
                 class="action-btn delete-btn"
                 @click="openConfirmationDialogbox(category.category_code, category.description)"
               >
-                <span class="material-icons">delete</span> Delete
+                <font-awesome-icon icon="trash" class="fa-icons" /> Delete
               </button>
             </td>
           </tr>
@@ -77,6 +80,7 @@ import useNotification from '@/service/notificationService'
 import DialogBox from '@/components/DialogBox.vue'
 import useDialog from '@/service/useDialog'
 import Pagination from '@/components/PaginatioN.vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
@@ -252,6 +256,9 @@ onMounted(fetchCategories)
     &:hover {
       background-color: #0056b3;
     }
+    .fa-icons {
+      margin-right: 10px;
+    }
   }
 
   .table-container {
@@ -334,7 +341,7 @@ onMounted(fetchCategories)
           color: white;
         }
 
-        .material-icons {
+        .fa-icons {
           margin-right: 5px;
         }
       }
