@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-left: 50px; font-size: 2rem">
+  <div style="margin-left: 5rem; font-size: 2rem">
     <PurchaseTable :items="items" />
   </div>
 </template>

@@ -156,19 +156,19 @@ watch(
   display: flex;
   justify-content: space-between; /* Distribute space between items */
   align-items: center;
-  margin: 10px 0;
+  margin: 1rem 0;
 }
 
 .Table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 2rem;
 
   th,
   td {
-    padding: 15px; /* Increase padding for better spacing */
+    padding: 1.5rem; /* Increase padding for better spacing */
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 0.1rem solid #ddd;
   }
 
   thead {

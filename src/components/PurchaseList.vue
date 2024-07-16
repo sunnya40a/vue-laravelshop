@@ -8,7 +8,7 @@
         <DateRange @date-range-selected="Daterange" />
       </div>
       <button class="add-record-btn" @click="showAddForm">
-        <font-awesome-icon icon="plus" class="fa-icons" />Add Record
+        <RiAddCircleLine class="web-icons" /> Add Record
       </button>
     </div>
     <div class="table-container">
@@ -43,13 +43,13 @@
             <td>{{ purchase.user }}</td>
             <td class="action-buttons">
               <button class="action-btn view-btn" @click="viewRecord(purchase)">
-                <font-awesome-icon icon="magnifying-glass" class="fa-icons" /> View
+                <RiZoomInLine class="web-icons" /> View
               </button>
               <button class="action-btn edit-btn" @click="editRecord(purchase)">
-                <font-awesome-icon icon="pen-to-square" class="fa-icons" /> Edit
+                <RiEditLine size="2rem" class="web-icons" /> Edit
               </button>
               <button class="action-btn delete-btn" @click="openConfirmationDialogbox(purchase.PO)">
-                <font-awesome-icon icon="trash" class="fa-icons" /> Delete
+                <RiDeleteBin7Fill class="web-icons" /> Delete
               </button>
             </td>
           </tr>
@@ -95,7 +95,7 @@ import useDialog from '@/service/useDialog'
 import Pagination from '@/components/PaginatioN.vue'
 import DateRange from '@/components/DateRange.vue'
 import { format } from 'date-fns'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiAddCircleLine, RiEditLine, RiZoomInLine, RiDeleteBin7Fill } from '@remixicon/vue'
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
@@ -253,52 +253,56 @@ onMounted(fetchPurchases)
 <style scoped lang="scss">
 .container {
   margin-top: 0;
-  padding-left: 40px;
+  padding-left: 4rem;
 
   .bar {
     display: flex;
     justify-content: space-between; /* Align items horizontally with space between */
     align-items: center;
-    margin: 10px 0;
-    padding: 10px, 0px;
+    margin: 1rem 0;
+    padding: 1rem, 0;
   }
 
   .searcharea {
     flex: 1; /* Allow search area to grow and fill available space */
 
     .search-box {
-      height: 30px; /* Set desired height */
-      padding: 0 10px; /* Add padding for better look */
-      font-size: 16px; /* Increase font size for better readability */
-      border: 1px solid #ccc; /* Add border */
-      border-radius: 10px; /* Add border radius */
+      height: 3rem; /* Set desired height */
+      padding: 0 1rem; /* Add padding for better look */
+      font-size: 1.6rem; /* Increase font size for better readability */
+      border: 0.1rem solid #ccc; /* Add border */
+      border-radius: 1rem; /* Add border radius */
     }
     .search-icon {
       position: relative;
-      top: 20px;
-      left: -30px;
+      top: 2rem;
+      left: -3rem;
       transform: translateY(-40%);
-      font-size: 25px;
+      font-size: 2.5rem;
       color: #aaa; /* Adjust icon color */
       pointer-events: none; /* Ensure icon is not clickable */
     }
   }
 
   .add-record-btn {
-    padding: 10px 20px;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    font-size: 1.4rem;
     border: none;
-    background-color: #007bff;
+    background-color: var(--active-button-color);
     color: white;
-    border-radius: 4px;
+    border-radius: 0.4rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    .fa-icons {
-      margin-right: 10px;
+    .web-icons {
+      margin-right: 1rem;
+      width: 2rem;
+      height: 2rem;
     }
 
     &:hover {
-      background-color: #0056b3;
+      background-color: var(--hover-button-color);
     }
   }
 
@@ -316,23 +320,23 @@ onMounted(fetchPurchases)
 
       th {
         background-color: #e5b2a5;
-        padding: 15px 2px;
-        font-size: 14px;
+        padding: 1.5rem 0.2rem;
+        font-size: 1.4rem;
         position: sticky;
         top: 0;
-        height: 40px;
+        height: 4rem;
         white-space: nowrap;
-        border-bottom: 2px solid silver;
+        border-bottom: 0.2rem solid silver;
       }
 
       td {
-        padding: 5px;
-        font-size: 14px;
-        height: 40px;
+        padding: 0.5rem;
+        font-size: 1.4rem;
+        height: 4rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        border-left: 1px solid rgb(243, 71, 3);
+        border-left: 0.1rem solid rgb(243, 71, 3);
 
         &:first-child {
           border-left: none;
@@ -350,15 +354,15 @@ onMounted(fetchPurchases)
       .action-buttons {
         display: flex;
         justify-content: center;
-        gap: 5px;
+        gap: 0.5rem;
       }
 
       .action-btn {
-        padding: 15px 8px;
+        padding: 1.5rem 0.8rem;
         border: none;
         cursor: pointer;
-        border-radius: 4px;
-        font-size: 14px;
+        border-radius: 0.4rem;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
         transition: background-color 0.3s ease;
@@ -382,8 +386,10 @@ onMounted(fetchPurchases)
           color: white;
         }
 
-        .fa-icons {
-          margin-right: 5px;
+        .web-icons {
+          margin-right: 0.5rem;
+          width: 1.8rem;
+          height: 1.8rem;
         }
       }
     }

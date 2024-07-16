@@ -24,11 +24,11 @@
           </div>
           <div class="button-group">
             <button type="submit" class="btn btn-primary">
-              <font-awesome-icon icon="floppy-disk" class="fa-icons" />
+              <RiSave3Fill class="web-icons" />
               {{ category ? 'Update' : 'Save' }}
             </button>
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
+              <RiCloseCircleFill class="web-icons" />
               Cancel
             </button>
           </div>
@@ -46,7 +46,7 @@
           </div>
           <div class="button-group">
             <button type="button" class="btn btn-secondary" @click="closeModal">
-              <font-awesome-icon icon="circle-xmark" class="fa-icons" />
+              <RiCloseCircleFill class="web-icons" />
               Close
             </button>
           </div>
@@ -61,7 +61,7 @@ import axios from 'axios'
 import { defineProps, defineEmits, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiCloseCircleFill, RiSave3Fill } from '@remixicon/vue'
 
 const props = defineProps({
   category: {
@@ -145,56 +145,56 @@ const submitForm = async () => {
 }
 
 .header {
-  font-size: 15px;
-  margin: 10px;
+  font-size: 1.5rem;
+  margin: 1rem;
   position: relative;
   background: #007bff;
-  padding: 15px 0;
-  border-radius: 8px;
-  width: 600px;
+  padding: 1.5rem 0;
+  border-radius: 0.8rem;
+  width: 60rem;
   max-width: 90%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
 
   .heading {
     color: white;
-    margin-left: 15px;
+    margin-left: 1.5rem;
   }
 }
 
 .modal-content {
-  margin-top: 10px;
+  margin-top: 1rem;
   background: white;
-  padding: 15px;
-  font-size: 12px;
+  padding: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .close {
   position: absolute;
   color: white;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
+  top: 1rem;
+  right: 1rem;
+  font-size: 2.4rem;
   cursor: pointer;
 }
 
 .form-group {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 
   label {
-    width: 100px;
+    width: 10rem;
     font-weight: bold;
   }
 
   input,
   textarea {
     flex: 1;
-    padding: 5px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 1.4rem;
+    border: 0.1rem solid #ccc;
+    border-radius: 0.4rem;
     background-color: rgb(245, 244, 226);
   }
 
@@ -207,7 +207,7 @@ const submitForm = async () => {
 
   textarea {
     resize: vertical;
-    height: 50px;
+    height: 5rem;
   }
 }
 
@@ -223,12 +223,12 @@ const submitForm = async () => {
     max-height: 200px;
     overflow-y: auto;
     background: #f0f0f0;
-    border: 1px solid blue;
+    border: 0.1rem solid blue;
     border-top: none;
     z-index: 1000;
 
     li {
-      padding: 10px;
+      padding: 1rem;
       cursor: pointer;
 
       &:hover {
@@ -241,16 +241,16 @@ const submitForm = async () => {
 .button-group {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 1rem;
 
   .btn {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-size: 1.6rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.4rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
@@ -272,8 +272,9 @@ const submitForm = async () => {
       background-color: #5a6268;
     }
   }
-  .fa-icons {
-    font-size: 20px;
+  .web-icons {
+    width: 2rem;
+    height: 2rem;
   }
 }
 </style>

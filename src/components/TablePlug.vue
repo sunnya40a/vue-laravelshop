@@ -234,46 +234,46 @@ onMounted(fetchData)
 
 <style lang="scss" scoped>
 .tablearea {
-  margin-left: 50px;
-  margin-right: 20px;
+  margin-left: 5rem;
+  margin-right: 2rem;
 
   .bar {
     display: flex;
     justify-content: space-between; /* Distribute space between items */
     align-items: center;
-    margin: 10px 0;
+    margin: 1rem 0;
     .spacer {
-      margin-left: 10px; /* Adjust spacing as needed */
+      margin-left: 1rem; /* Adjust spacing as needed */
     }
   }
   .searcharea {
-    margin-left: 50px;
-    font-size: 20px;
-    height: 20px;
+    margin-left: 5rem;
+    font-size: 2rem;
+    height: 2rem;
   }
   .Table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #ccc;
+    border: 0.1rem solid #ccc;
     font-family: Arial, sans-serif;
-    font-size: 20px;
+    font-size: 2rem;
     .sortable {
       cursor: pointer; /* Change cursor to pointer */
     }
 
     th,
     td {
-      padding: 10px;
+      padding: 1rem;
       text-align: left;
     }
 
     th {
       background-color: #f2f2f2;
-      border-bottom: 2px solid #ddd;
+      border-bottom: 0.2rem solid #ddd;
     }
 
     td {
-      border-bottom: 1px solid #ddd;
+      border-bottom: 0.1rem solid #ddd;
     }
 
     tr:hover {

@@ -3,7 +3,7 @@
   <aside :class="{ 'is-expanded': is_expanded }">
     <div class="menu-toggle-wrap">
       <button class="menu-toggle" @click="toggleMenu">
-        <font-awesome-icon icon="angles-right" class="fa-icons" />
+        <RiArrowRightDoubleLine class="menu-icons" />
       </button>
     </div>
     <div class="menu">
@@ -18,15 +18,13 @@
                 'active-link': checkActive(index, item.link)
               }"
             >
-              <font-awesome-icon v-if="item.icon" :icon="item.icon" class="fa-icons" />
+              <component v-if="item.icon" :is="item.icon" class="menu-icons" />
               <router-link v-if="item.link" :to="item.link">
                 <span>{{ item.title }}</span>
               </router-link>
               <span v-else>{{ item.title }}</span>
-              <!-- Replace material icon with Font Awesome icon -->
-              <font-awesome-icon
+              <RiArrowDownSFill
                 v-if="item.subnav"
-                icon="caret-down"
                 class="dropdown-icon"
                 :class="{
                   'rotate-down': !item.open,
@@ -47,13 +45,41 @@ import { computed } from 'vue'
 import SidebarHeader from './SidebarHeader.vue'
 import SubNav from './SubNav.vue'
 import { useStore } from '@/stores/navigation'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {
+  RiArrowDownSFill,
+  RiArrowRightDoubleLine,
+  RiDashboard3Fill,
+  RiDashboardFill,
+  RiFolderAddFill,
+  RiFunctionAddFill,
+  RiHome4Fill,
+  RiInformation2Fill,
+  RiLogoutBoxFill,
+  RiLogoutBoxRFill,
+  RiShoppingBagFill,
+  RiShoppingCart2Fill,
+  RiSwap3Fill,
+  RiTableFill
+} from '@remixicon/vue'
 
 export default {
   components: {
-    FontAwesomeIcon,
     SidebarHeader,
-    SubNav
+    SubNav,
+    RiArrowRightDoubleLine,
+    RiArrowDownSFill,
+    RiHome4Fill,
+    RiDashboard3Fill,
+    RiDashboardFill,
+    RiShoppingCart2Fill,
+    RiShoppingBagFill,
+    RiFolderAddFill,
+    RiFunctionAddFill,
+    RiLogoutBoxFill,
+    RiLogoutBoxRFill,
+    RiInformation2Fill,
+    RiTableFill,
+    RiSwap3Fill
   },
   setup() {
     const navstore = useStore()
@@ -154,15 +180,16 @@ aside {
       margin-left: auto;
       top: 1rem;
 
-      .fa-icons {
-        font-size: 2rem;
+      .menu-icons {
+        width: 3rem;
+        height: 3rem;
         margin-right: 0.5rem;
         color: var(--menuiconcolor);
         transition: 0.2s ease-out;
       }
 
       &:hover {
-        .fa-icons {
+        .menu-icons {
           color: var(--menuhovercolor);
           transform: translateX(0.5rem);
         }
@@ -173,7 +200,7 @@ aside {
   .menu {
     #sidebar {
       width: 100%;
-      max-width: 35rem;
+      max-width: 30rem;
       background-color: var(--menubackground);
     }
 
@@ -204,15 +231,18 @@ aside {
             transition: background-color 0.5s ease;
           }
 
-          .fa-icons {
-            font-size: 1.5rem;
+          .menu-icons {
+            width: 2.5rem;
+            height: 2.5rem;
             justify-content: center;
             color: var(--menuiconcolor);
+
             margin-left: auto;
           }
           .dropdown-icon {
             color: var(--dropdownmenucolor);
-            font-size: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
 
             &.rotate-down {
               transform: rotate(0deg);
@@ -262,7 +292,7 @@ aside {
     }
   }
 
-  //@media (max-width: 1024px) {
+  //@media (max-width: 102.4rem) {
   //  position: absolute;
   //  z-index: 99;
   //}

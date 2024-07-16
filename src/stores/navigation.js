@@ -7,13 +7,13 @@ export const useStore = defineStore({
       {
         title: 'Dashboard',
         open: false,
-        icon: 'house-chimney',
+        icon: 'RiDashboard3Fill',
         link: '/home'
       },
       {
         title: 'Purchase',
         open: false,
-        icon: 'house-chimney',
+        icon: 'RiShoppingCart2Fill',
         subnav: [
           { title: 'Purchase Entry', link: '/pentry' },
           { title: 'Purchase View', link: '/purchase' },
@@ -22,32 +22,32 @@ export const useStore = defineStore({
       },
       {
         title: 'Category',
-        icon: 'house-chimney',
+        icon: 'RiSwap3Fill',
         open: false,
         link: '/category'
       },
       {
         title: 'Items Entry',
-        icon: 'house-chimney',
+        icon: 'RiFolderAddFill',
         open: false,
         link: '/itemsentry'
       },
       {
         title: 'Table',
-        icon: 'house-chimney',
+        icon: 'RiTableFill',
         open: false,
         link: '/table'
       },
       {
         title: 'Plug Table',
-        icon: 'house-chimney',
+        icon: 'RiTableFill',
         open: false,
         link: '/ptable'
       },
       {
         title: 'Sumenu Test',
         open: false,
-        icon: 'house-chimney',
+        icon: 'ri-home-4-fill',
         subnav: [
           {
             title: '2nd level',
@@ -95,13 +95,13 @@ export const useStore = defineStore({
       },
       {
         title: 'Logout',
-        icon: 'house-chimney',
+        icon: 'RiLogoutBoxRFill',
         open: false,
         link: '/logout'
       },
       {
         title: 'About',
-        icon: 'house-chimney',
+        icon: 'RiInformation2Fill',
         open: false,
         link: '/about'
       }

@@ -27,7 +27,7 @@ import { PhCaretDown } from '@phosphor-icons/vue'
 }
 
 .my-icon {
-  margin: 0 10px; /* Add spacing between icons if needed */
+  margin: 0 1rem; /* Add spacing between icons if needed */
 }
 
 .icon-example {
@@ -35,20 +35,20 @@ import { PhCaretDown } from '@phosphor-icons/vue'
   flex-direction: column; /* Align text and icon vertically */
   justify-content: center;
   align-items: center;
-  font-size: 24px; /* Adjust the size as needed */
+  font-size: 2.4rem; /* Adjust the size as needed */
   color: green; /* Adjust the color as needed */
   height: 50vh; /* Adjust the height as needed */
 }
 
 .heart-icon {
   color: blue;
-  width: 64px; /* Set width */
-  height: 64px; /* Set height */
+  width: 6.4rem; /* Set width */
+  height: 6.4rem; /* Set height */
 }
 
 .home-icon {
   color: red;
-  width: 32px; /* Set width */
-  height: 32px; /* Set height */
+  width: 3.2rem; /* Set width */
+  height: 3.2rem; /* Set height */
 }
 </style>

@@ -208,34 +208,34 @@ const sortedData = computed(() => {
 
 <style lang="scss" scoped>
 .searcharea {
-  margin-left: 50px;
-  font-size: 20px;
-  height: 20px;
+  margin-left: 5rem;
+  font-size: 2rem;
+  height: 2rem;
 }
 .Table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #ccc;
+  border: 0.1rem solid #ccc;
   font-family: Arial, sans-serif;
-  font-size: 20px;
-  margin-left: 50px;
+  font-size: 2rem;
+  margin-left: 5rem;
   .sortable {
     cursor: pointer; /* Change cursor to pointer */
   }
 
   th,
   td {
-    padding: 10px;
+    padding: 1rem;
     text-align: left;
   }
 
   th {
     background-color: #f2f2f2;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 0.2rem solid #ddd;
   }
 
   td {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 0.1rem solid #ddd;
   }
 
   tr:hover {

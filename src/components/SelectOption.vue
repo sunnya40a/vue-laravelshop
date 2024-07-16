@@ -3,7 +3,7 @@
     <label for="item-select">Choose an item:</label>
     <div id="item-select" @click="toggleDropdown" class="dropdown-selected">
       {{ selectedItemDescription || 'Select an item' }}
-      <span class="dropdown-icon">&#9660;</span>
+      <span class="dropdown-icon">C</span>
       <!-- Dropdown icon -->
     </div>
     <div v-if="dropdownOpen" class="dropdown-options">

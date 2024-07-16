@@ -9,9 +9,8 @@
             'active-link': checkActive(index, item.link)
           }"
         >
-          <font-awesome-icon
+          <RiArrowDownSFill
             v-if="item.subnav"
-            icon="caret-down"
             class="dropdown-icon"
             :class="{
               'rotate-down': !item.open,
@@ -31,10 +30,10 @@
 
 <script>
 import { useStore } from '@/stores/navigation'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiArrowDownSFill } from '@remixicon/vue'
 export default {
   components: {
-    FontAwesomeIcon
+    RiArrowDownSFill
   },
   name: 'SubNav',
   props: ['list', 'depth'],
@@ -172,7 +171,8 @@ export default {
       }
       .dropdown-icon {
         color: var(--dropdownmenucolor);
-        font-size: 2rem;
+        width: 2.5rem;
+        height: 2.5rem;
         text-align: right;
         margin-left: 0.5rem;
         //border-radius: 90%;

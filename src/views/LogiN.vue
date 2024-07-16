@@ -25,7 +25,8 @@
             autocomplete="current-password"
           />
           <span class="password-icon" @click="togglePasswordVisibility">
-            <font-awesome-icon :icon="eyeIcon" />
+            <!-- <font-awesome-icon :icon="eyeIcon" /> -->
+            <component :is="eyeIcon" />
           </span>
         </div>
       </div>
@@ -35,7 +36,6 @@
       </div>
     </form>
     <button type="button" @click="login">Login</button>
-    <!-- <p v-if="error" class="error-message">{{ error }}</p> -->
   </div>
 </template>
 
@@ -44,8 +44,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { cryptoService } from '@/service/security'
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiEyeCloseLine, RiEyeLine } from '@remixicon/vue'
 import useNotification from '@/service/notificationService'
 import axios from 'axios'
 
@@ -60,8 +59,7 @@ const { notify } = useNotification()
 const siteurl = import.meta.env.VITE_API_URL
 
 // Define computed property for the eye icon
-//const eyeIcon = computed(() => (isPasswordVisible.value ? faEye : faEyeSlash))
-const eyeIcon = computed(() => (isPasswordVisible.value ? faEyeSlash : faEye))
+const eyeIcon = computed(() => (isPasswordVisible.value ? RiEyeLine : RiEyeCloseLine))
 
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value

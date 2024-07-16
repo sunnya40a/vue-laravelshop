@@ -27,22 +27,22 @@ const removeNotification = (id) => {
 <style scoped>
 .notification-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 2rem;
+  right: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
   z-index: 1000;
 }
 
 .notification {
-  padding: 15px;
-  border-radius: 17px;
-  /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); */
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+  padding: 1.5rem;
+  border-radius: 1.7rem;
+  /*box-shadow: 0 .2rem 1rem rgba(0, 0, 0, 0.5); */
+  box-shadow: 0.4rem 0.4rem 1rem rgba(0, 0, 0, 0.5);
   color: #fff;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 1.3rem;
   /*font-weight: bold;*/
   transition: opacity 0.3s ease;
 }

@@ -2,8 +2,7 @@
   <div class="multiselect">
     <div @click="toggleDropdown" class="selected-items">
       <span>Filters</span>
-      <font-awesome-icon
-        icon="caret-down"
+      <RiArrowDownSFill
         class="dropdown-icon"
         :class="{
           'rotate-down': !isDropdownOpen,
@@ -28,7 +27,7 @@
 
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiArrowDownSFill } from '@remixicon/vue'
 
 // eslint-disable-next-line no-unused-vars
 const props = defineProps(['items'])
@@ -50,20 +49,22 @@ const handleCheckboxChange = () => {
 .multiselect {
   position: relative;
   font-family: Arial, sans-serif;
-  margin: 0px 10px;
+  margin: 0rem 1rem;
   width: 20rem;
 
   .selected-items {
     display: flex;
     align-items: center;
     justify-content: space-between; /* Ensure space between the text and icon */
-    padding: 10px;
-    border: 1px solid #ccc;
+    padding: 1rem;
+    border: 0.1rem solid #ccc;
     cursor: pointer;
 
     .dropdown-icon {
       margin-left: auto;
       text-align: right;
+      width: 3rem;
+      height: 3rem;
       color: green;
     }
 
@@ -83,16 +84,16 @@ const handleCheckboxChange = () => {
     top: 100%;
     left: 0;
     background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 10px;
-    max-height: 150px;
+    border: 0.1rem solid #ccc;
+    padding: 1rem;
+    max-height: 15rem;
     overflow-y: auto;
     width: 20rem;
   }
 
   .checkbox-label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 0.8rem;
   }
 }
 </style>

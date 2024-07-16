@@ -112,7 +112,7 @@ watch(
 :root {
   font-size: 62.5%;
   --sidebar-width: 2rem;
-  --expanded-sidebar-width: 32rem;
+  --expanded-sidebar-width: 25rem;
   --menubackground: #1d5d9b;
   --menutext: #e0e0e0;
   --headertext: #00ffff;
@@ -121,9 +121,13 @@ watch(
   --activeborder: #ff9843;
   --seperatorcolor: #073757;
 
-  --menuiconcolor: #e0e0e0;
+  //--menuiconcolor: #e0e0e0;
+  --menuiconcolor: #d8d5f0;
   --dropdownmenucolor: #fcda91;
   --light: #f1f5f9;
+  --active-button-color: #007bff;
+  --hover-button-color: #0056b3;
+  --disable-button-color: grey;
 }
 
 * {

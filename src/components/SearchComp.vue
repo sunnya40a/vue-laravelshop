@@ -12,14 +12,14 @@
         placeholder="Search..."
         :class="{ focused: isFocused }"
       />
-      <font-awesome-icon icon="magnifying-glass" class="fa-icons" />
+      <RiSearch2Line class="web-icons" />
     </div>
   </form>
 </template>
 
 <script setup>
 import { defineEmits, ref } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RiSearch2Line } from '@remixicon/vue'
 
 const emit = defineEmits(['search'])
 const searchText = ref('')
@@ -79,13 +79,14 @@ const handleInput = (e) => {
   border-color: #007bff; /* Blue color when input is focused */
 }
 
-.fa-icons {
+.web-icons {
   position: absolute;
   right: 0.8rem; /* Adjust icon position */
   top: 50%; /* Align icon vertically */
   transform: translateY(-50%);
-  font-size: 1.6rem; /* Adjust icon size */
-  color: #555; /* Adjust icon color */
+  width: 2rem;
+  height: 2rem;
+  color: #007bff; /* Adjust icon color */
   /*cursor: pointer;*/
 }
 </style>

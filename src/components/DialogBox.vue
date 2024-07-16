@@ -15,54 +15,52 @@
           :class="getButtonClass(button)"
           class="btn"
         >
-          <font-awesome-icon :icon="getButtonIcon(button)" class="icon" />
+          <component :is="getButtonIcon(button)" class="web-icons" />
           {{ button }}
         </button>
       </div>
     </div>
   </div>
 </template>
+<script setup>
+import { RiCheckboxCircleLine, RiCloseLine, RiCloseCircleLine, RiMore2Line } from '@remixicon/vue'
 
-<script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-export default {
-  components: {
-    FontAwesomeIcon
-  },
-  props: {
-    title: String,
-    message: String,
-    buttons: Array,
-    visible: Boolean
-  },
-  methods: {
-    handleAction(action) {
-      this.$emit('confirm', action)
-    },
-    getButtonClass(button) {
-      switch (button.toLowerCase()) {
-        case 'yes':
-          return 'btn-yes'
-        case 'no':
-          return 'btn-no'
-        case 'cancel':
-          return 'btn-cancel'
-        default:
-          return 'btn-others'
-      }
-    },
-    getButtonIcon(button) {
-      switch (button.toLowerCase()) {
-        case 'yes':
-          return ['fas', 'check-circle'] // Font Awesome icon class for "yes" button
-        case 'no':
-          return ['fas', 'times-circle'] // Font Awesome icon class for "no" button
-        case 'cancel':
-          return ['fas', 'times'] // Font Awesome icon class for "cancel" button
-        default:
-          return ['fas', 'ellipsis-h'] // Default Font Awesome icon class
-      }
-    }
+const { title, message, buttons, visible } = defineProps({
+  title: String,
+  message: String,
+  buttons: Array,
+  visible: Boolean
+})
+
+const emit = defineEmits(['confirm'])
+
+const handleAction = (action) => {
+  emit('confirm', action)
+}
+
+const getButtonClass = (button) => {
+  switch (button.toLowerCase()) {
+    case 'yes':
+      return 'btn-yes'
+    case 'no':
+      return 'btn-no'
+    case 'cancel':
+      return 'btn-cancel'
+    default:
+      return 'btn-others'
+  }
+}
+
+const getButtonIcon = (button) => {
+  switch (button.toLowerCase()) {
+    case 'yes':
+      return RiCheckboxCircleLine // Remix Icon component for "yes" button
+    case 'no':
+      return RiCloseCircleLine // Remix Icon component for "no" button
+    case 'cancel':
+      return RiCloseLine // Remix Icon component for "cancel" button
+    default:
+      return RiMore2Line // Default Remix Icon component
   }
 }
 </script>
@@ -95,33 +93,33 @@ export default {
 .modal-content {
   background: white;
   padding: 0;
-  border-radius: 10px;
-  width: 350px;
+  border-radius: 1rem;
+  width: 35rem;
   max-width: 90%;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }
 
 .modal-header {
   background-color: #021552;
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
+  padding: 1rem;
+  border-radius: 1rem 1rem 0 0;
 
   h2 {
     margin: 0;
     text-align: left;
-    font-size: 18px;
+    font-size: 1.8rem;
     color: #fff;
   }
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 2rem;
 
   p {
     margin: 0;
-    font-size: 16px;
+    font-size: 1.6rem;
     color: #141313;
   }
 }
@@ -129,26 +127,27 @@ export default {
 .modal-footer {
   display: flex;
   justify-content: space-around;
-  padding: 10px 0;
+  padding: 1rem 0;
 }
 
 .btn {
   flex: 1;
-  min-width: 10px;
+  min-width: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px;
-  margin: 10px;
+  padding: 1rem 2rem;
+  margin: 1rem;
   cursor: pointer;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 0.4rem;
+  font-size: 1.6rem;
   transition: background-color 0.3s ease;
 
-  .icon {
-    margin-right: 5px;
-    font-size: 20px;
+  .web-icons {
+    width: 2.4rem;
+    height: 2.4rem;
+    margin-right: 0.5rem;
   }
 }
 

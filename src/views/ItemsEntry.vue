@@ -1,6 +1,6 @@
 <template lang="">
   <div>
-    <p>Payment entry</p>
+    <p>Payment entry sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</p>
   </div>
 </template>
 <script setup></script>

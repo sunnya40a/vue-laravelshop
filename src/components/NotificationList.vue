@@ -20,13 +20,13 @@ const { notifications } = useNotification()
 <style scoped>
 .notification-list {
   position: fixed;
-  bottom: 20px;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 1rem;
   width: 100%;
-  max-width: 300px;
+  max-width: 30rem;
 }
 </style>
