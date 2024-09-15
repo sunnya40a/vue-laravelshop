@@ -18,7 +18,7 @@
                 'active-link': checkActive(index, item.link)
               }"
             >
-              <component v-if="item.icon" :is="item.icon" class="menu-icons" />
+              <i><component v-if="item.icon" :is="item.icon" class="menu-icons" /></i>
               <router-link v-if="item.link" :to="item.link">
                 <span>{{ item.title }}</span>
               </router-link>

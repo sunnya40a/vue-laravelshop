@@ -63,7 +63,7 @@
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
       />
-      <PurchaseForm
+      <FormPurchase
         v-if="isFormVisible"
         :purchase="selectedPurchase"
         :mode="formMode"
@@ -86,7 +86,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import PurchaseForm from '@/components/PurchaseForm.vue'
+import FormPurchase from '@/components/FormPurchase.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'

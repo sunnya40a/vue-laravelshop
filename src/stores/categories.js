@@ -1,11 +1,10 @@
-// src/stores/categories.js
 import { defineStore } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
 import axios from 'axios'
 
 export const useCategoriesStore = defineStore('categories', {
   state: () => ({
-    categories: JSON.parse(localStorage.getItem('categories') || '[]')
+    categories: [] // Initialize with an empty array
   }),
   actions: {
     async fetchCategories() {
@@ -13,28 +12,36 @@ export const useCategoriesStore = defineStore('categories', {
       const authStore = useAuthStore()
 
       try {
+        // Attempt to fetch categories from the network
         const response = await axios.get(`${siteurl}/api/categories/list`, {
           headers: {
             Accept: 'application/json',
-            Authorization: authStore.token
+            Authorization: `Bearer ${authStore.token}`
           },
           withCredentials: true // Include credentials (cookies)
         })
 
-        if (response.status !== 200) {
+        if (response.status === 200) {
+          const data = response.data
+
+          if (Array.isArray(data.data)) {
+            // Update the store's state with the fetched data
+            this.categories = data.data
+            // Save to localStorage for future use
+            localStorage.setItem('categories', JSON.stringify(this.categories))
+          } else {
+            throw new Error('Data format is not as expected')
+          }
+        } else {
           throw new Error('Network response was not ok')
         }
-
-        const data = response.data
-
-        if (Array.isArray(data.data)) {
-          this.categories = data.data.map((category) => category.description)
-          localStorage.setItem('categories', JSON.stringify(this.categories)) // Save to local storage
-        } else {
-          throw new Error('Data format is not as expected')
-        }
       } catch (error) {
-        console.error('Error fetching categories:', error)
+        // Log the error and fall back to localStorage
+        console.error('Error fetching categories from network:', error)
+
+        // Load categories from localStorage if network fetch fails
+        const storedCategories = JSON.parse(localStorage.getItem('categories') || '[]')
+        this.categories = storedCategories
       }
     }
   }

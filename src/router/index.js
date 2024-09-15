@@ -25,7 +25,7 @@ const router = createRouter({
     {
       path: '/itemsentry',
       name: 'itemsentry',
-      component: () => import('../views/ItemsEntry.vue'),
+      component: () => import('../views/EntryEditInventory.vue'),
       meta: { requiresAuth: true }
     },
     {
@@ -49,7 +49,7 @@ const router = createRouter({
     {
       path: '/pentry',
       name: 'Purchase Entry',
-      component: () => import('../views/PurchaseEntryEdit.vue'),
+      component: () => import('../views/EntryEditPurchase.vue'),
       meta: { requiresAuth: true }
     },
     {

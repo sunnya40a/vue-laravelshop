@@ -1,3 +1,4 @@
+//ListInventory.vue
 <template>
   <div class="container">
     <div class="bar">
@@ -5,35 +6,43 @@
         <SearchComp @search="handleSearchText" />
       </div>
       <button class="add-record-btn" @click="showAddForm">
-        <RiAddCircleLine class="web-icons" /> Add Record
+        <RiAddCircleLine class="web-icons" /> Add Item
       </button>
     </div>
     <div class="table-container">
-      <table class="list-table">
+      <table class="inventory-table">
         <thead>
           <tr>
-            <th>Category Code</th>
+            <th>Code</th>
             <th>Description</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Category</th>
+            <th>Supplier</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-if="categories.length === 0">
+          <tr v-if="inventories.length === 0">
             <td colspan="10">No records found.</td>
           </tr>
-          <tr v-for="category in categories" :key="category.category_code">
-            <td>{{ category.category_code }}</td>
-            <td>{{ category.description }}</td>
+          <tr v-for="inventory in inventories" :key="inventory.item_list">
+            <td>{{ inventory.item_list }}</td>
+            <td>{{ inventory.description }}</td>
+            <td>{{ inventory.qty }}</td>
+            <td>{{ inventory.unit }}</td>
+            <td>{{ inventory.category }}</td>
+            <td>{{ inventory.s_name }}</td>
             <td class="action-buttons">
-              <button class="action-btn view-btn" @click="viewRecord(category)">
+              <button class="action-btn view-btn" @click="viewRecord(inventory)">
                 <RiZoomInLine class="web-icons" /> View
               </button>
-              <button class="action-btn edit-btn" @click="editRecord(category)">
+              <button class="action-btn edit-btn" @click="editRecord(inventory)">
                 <RiEditLine size="2rem" class="web-icons" /> Edit
               </button>
               <button
                 class="action-btn delete-btn"
-                @click="openConfirmationDialogbox(category.category_code, category.description)"
+                @click="openConfirmationDialogbox(inventory.item_list)"
               >
                 <RiDeleteBin7Fill class="web-icons" /> Delete
               </button>
@@ -49,12 +58,12 @@
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
       />
-      <CategoryForm
+      <FormInventory
         v-if="isFormVisible"
-        :category="selectedCategory"
+        :inventory="selectedInventory"
         :mode="formMode"
         @close="closeForm"
-        @refresh="fetchCategories"
+        @refresh="fetchPurchases"
       />
     </div>
 
@@ -72,7 +81,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import CategoryForm from '@/components/CategoryForm.vue'
+import FormInventory from '@/components/FormInventory.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
@@ -83,34 +92,33 @@ import { RiAddCircleLine, RiEditLine, RiZoomInLine, RiDeleteBin7Fill } from '@re
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
-const openConfirmationDialogbox = (category_code, description) => {
+const openConfirmationDialogbox = (item_code) => {
   dialogTitle.value = 'Confirm Action'
-  dialogMessage.value =
-    'Are you sure that you want to delete category ' + description + '(' + category_code + ')?'
-  dialogId.value = category_code
+  dialogMessage.value = 'Are you sure that you want to delete PO ' + item_code + '?'
+  dialogId.value = item_code
   dialogButtons.value = ['Yes', 'No']
   dialogVisible.value = true
 }
 
 const { notify } = useNotification()
-const categories = ref([])
+const inventories = ref([])
 const isFormVisible = ref(false)
-const selectedCategory = ref(null)
+const selectedInventory = ref(null)
 const formMode = ref('entry') // 'entry', 'edit', 'view'
 const authStore = useAuthStore()
 const siteUrl = import.meta.env.VITE_API_URL
 const currentPage = ref(1)
 const limit = ref(10)
 const searchQuery = ref('')
-const sortByField = ref('category_code')
+const sortByField = ref('item_list')
 const sortDirection = ref('asc')
 
 let totalRecords = ref(0)
 let totalPageCount = ref(1)
 
-const fetchCategories = async () => {
+const fetchPurchases = async () => {
   try {
-    const response = await axios.get(`${siteUrl}/api/categories/list`, {
+    const response = await axios.get(`${siteUrl}/api/inventory/list`, {
       params: {
         page: currentPage.value,
         limit: limit.value,
@@ -124,44 +132,44 @@ const fetchCategories = async () => {
       },
       withCredentials: true
     })
-    categories.value = response.data.data
+    inventories.value = response.data.data
     totalRecords.value = response.data.TotalRecords
     totalPageCount.value = Math.ceil(response.data.TotalRecords / limit.value)
   } catch (error) {
-    console.error('Error fetching purchases:', error)
+    console.error('Error fetching inventories:', error)
   }
 }
 
 const handlePageChange = (pageNumber) => {
   currentPage.value = pageNumber
-  fetchCategories()
+  fetchPurchases()
 }
 
 const handlePerPageChange = (perPage) => {
   limit.value = perPage
   currentPage.value = 1
-  fetchCategories()
+  fetchPurchases()
 }
 
 const handleSearchText = (searchText) => {
   searchQuery.value = searchText
-  fetchCategories()
+  fetchPurchases()
 }
 
 const showAddForm = () => {
-  selectedCategory.value = null
+  selectedInventory.value = null
   formMode.value = 'entry'
   isFormVisible.value = true
 }
 
-const viewRecord = (category) => {
-  selectedCategory.value = category
+const viewRecord = (inventory) => {
+  selectedInventory.value = inventory
   formMode.value = 'view'
   isFormVisible.value = true
 }
 
-const editRecord = (category) => {
-  selectedCategory.value = category
+const editRecord = (inventory) => {
+  selectedInventory.value = inventory
   formMode.value = 'edit'
   isFormVisible.value = true
 }
@@ -175,7 +183,7 @@ const handleAfterDialogConfirm = async (option) => {
   if (option === 'Yes' && dialogId.value) {
     try {
       const response = await axios.delete(
-        `${siteUrl}/api/categories/delete?code=${dialogId.value}`,
+        `${siteUrl}/api/inventory/delete?code=${dialogId.value}`,
         {
           headers: {
             Authorization: `Bearer ${authStore.token}`
@@ -184,11 +192,11 @@ const handleAfterDialogConfirm = async (option) => {
       )
 
       if (response.status === 200) {
-        fetchCategories()
+        fetchPurchases()
         notify(response.data.message, 'success')
       } else {
         notify(
-          `Failed to delete PO ${dialogId.value}. Server responded with: ${response.status}`,
+          `Failed to delete inventory ${dialogId.value}. Server responded with: ${response.status}`,
           'error'
         )
       }
@@ -204,14 +212,13 @@ const handleAfterDialogConfirm = async (option) => {
   }
 }
 
-onMounted(fetchCategories)
+onMounted(fetchPurchases)
 </script>
 
 <style scoped lang="scss">
 .container {
   margin-top: 0;
-  padding-left: 5rem;
-  padding-right: 1rem;
+  padding-left: 4rem;
 
   .bar {
     display: flex;
@@ -248,19 +255,19 @@ onMounted(fetchCategories)
     padding: 1rem 2rem;
     font-size: 1.4rem;
     border: none;
-    background-color: #007bff;
+    background-color: var(--active-button-color);
     color: white;
     border-radius: 0.4rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #0056b3;
-    }
     .web-icons {
       margin-right: 1rem;
       width: 2rem;
       height: 2rem;
+    }
+
+    &:hover {
+      background-color: var(--hover-button-color);
     }
   }
 
@@ -271,7 +278,7 @@ onMounted(fetchCategories)
     width: 100%;
     overflow: auto;
 
-    .list-table {
+    .inventory-table {
       width: 100%;
       border-collapse: collapse;
       text-align: center;

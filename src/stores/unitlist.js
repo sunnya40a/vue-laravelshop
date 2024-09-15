@@ -2,23 +2,23 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
-export const useSuppliersStore = defineStore('suppliers', {
+export const useUnitlistsStore = defineStore('unitlist', {
   state: () => ({
-    suppliers: []
+    unitlists: []
   }),
   actions: {
-    async fetchSuppliers() {
+    async fetchUnitlists() {
       const siteurl = import.meta.env.VITE_API_URL
       const authStore = useAuthStore()
 
       try {
-        // Attempt to fetch suppliers from API
-        const response = await axios.get(`${siteurl}/api/suppliers/minilist`, {
+        // Attempt to fetch unitlists from the API
+        const response = await axios.get(`${siteurl}/api/unitlist/list`, {
           headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${authStore.token}` // Ensure Bearer prefix for token
           },
-          withCredentials: true // Include credentials (cookies)
+          withCredentials: true
         })
 
         if (response.status === 200) {
@@ -26,9 +26,9 @@ export const useSuppliersStore = defineStore('suppliers', {
 
           if (Array.isArray(data.data)) {
             // Update the store's state with the fetched data
-            this.suppliers = data.data
+            this.unitlists = data.data
             // Save to localStorage for future use
-            localStorage.setItem('suppliers', JSON.stringify(this.suppliers))
+            localStorage.setItem('unitlist', JSON.stringify(this.unitlists))
           } else {
             throw new Error('Data format is not as expected')
           }
@@ -37,11 +37,11 @@ export const useSuppliersStore = defineStore('suppliers', {
         }
       } catch (error) {
         // Log the error and fall back to localStorage
-        console.error('Error fetching suppliers from network:', error)
+        console.error('Error fetching unitlists from network:', error)
 
-        // Load suppliers from localStorage if network fetch fails
-        const storedSuppliers = JSON.parse(localStorage.getItem('suppliers') || '[]')
-        this.suppliers = storedSuppliers
+        // Load unitlists from localStorage if network fetch fails
+        const storedUnitlists = JSON.parse(localStorage.getItem('unitlist') || '[]')
+        this.unitlists = storedUnitlists
       }
     }
   }

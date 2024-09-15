@@ -2,13 +2,13 @@
   <!-- PageHeader component with Font Awesome icon -->
   <PageHeader title="Category List" :icon="icon" />
   <div id="CategoryList">
-    <CategoryList />
+    <ListCategory />
   </div>
 </template>
 
 <script setup>
 import PageHeader from '@/components/PageHeader.vue'
-import CategoryList from '@/components/CategoryList.vue'
+import ListCategory from '@/components/ListCategory.vue'
 import { RiSwap3Fill } from '@remixicon/vue'
 import { markRaw } from 'vue'
 

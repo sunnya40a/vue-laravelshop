@@ -2,7 +2,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
-
 export const useItemlistsStore = defineStore('itemlists', {
   state: () => ({
     itemlists: []
@@ -18,7 +17,8 @@ export const useItemlistsStore = defineStore('itemlists', {
         if (storedItemlists.length > 0) {
           this.itemlists = storedItemlists
         } else {
-          const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
+          // const response = await axios.get(`${siteurl}/api/inventory/itemlist`, {
+          const response = await axios.get(`${siteurl}/api/inventory/list`, {
             headers: {
               Accept: 'application/json',
               Authorization: authStore.token

@@ -27,7 +27,7 @@ export const useStore = defineStore({
         link: '/category'
       },
       {
-        title: 'Items Entry',
+        title: 'Item Entry',
         icon: 'RiFolderAddFill',
         open: false,
         link: '/itemsentry'

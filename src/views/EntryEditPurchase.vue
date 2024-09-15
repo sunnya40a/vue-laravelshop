@@ -1,13 +1,13 @@
 <template>
   <PageHeader title="Purchase List" :icon="icon" />
   <div id="PurchaseList">
-    <PurchaseList />
+    <ListPurchase />
   </div>
 </template>
 
 <script setup>
 import PageHeader from '@/components/PageHeader.vue'
-import PurchaseList from '@/components/PurchaseList.vue'
+import ListPurchase from '@/components/ListPurchase.vue'
 import { RiShoppingCart2Fill } from '@remixicon/vue'
 import { markRaw } from 'vue'
 
