@@ -1,3 +1,4 @@
+//ListSupplier.vue
 <template>
   <div class="container">
     <div class="bar">
@@ -5,35 +6,50 @@
         <SearchComp @search="handleSearchText" />
       </div>
       <button class="add-record-btn" @click="showAddForm">
-        <RiAddCircleLine class="web-icons" /> Add Record
+        <RiAddCircleLine class="web-icons" /> Add Supplier
       </button>
     </div>
     <div class="table-container">
-      <table class="list-table">
+      <table class="supplier-table">
         <thead>
           <tr>
-            <th>Category Code</th>
-            <th>Description</th>
+            <th>Id</th>
+            <th>Supplier</th>
+            <th>Mobile (Pri)</th>
+            <th>Mobile (Sec.)</th>
+            <th>Contact Person</th>
+            <th>Contact Info</th>
             <th>Action</th>
+
+            <!-- `id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
+  `s_name` varchar(30) NOT NULL,
+  `mobile1` varchar(10) NOT NULL,
+  `mobile2` varchar(10) DEFAULT NULL,
+  `c_person` varchar(20) NOT NULL,
+  `contact_info` varchar(30) DEFAULT NULL,             -->
           </tr>
         </thead>
         <tbody>
-          <tr v-if="categories.length === 0">
+          <tr v-if="inventories.length === 0">
             <td colspan="10">No records found.</td>
           </tr>
-          <tr v-for="category in categories" :key="category.category_code">
-            <td>{{ category.category_code }}</td>
-            <td>{{ category.description }}</td>
+          <tr v-for="supplier in inventories" :key="supplier.id">
+            <td>{{ supplier.id }}</td>
+            <td>{{ supplier.s_name }}</td>
+            <td>{{ supplier.mobile1 }}</td>
+            <td>{{ supplier.mobile2 }}</td>
+            <td>{{ supplier.c_person }}</td>
+            <td>{{ supplier.contact_info }}</td>
             <td class="action-buttons">
-              <button class="action-btn view-btn" @click="viewRecord(category)">
+              <button class="action-btn view-btn" @click="viewRecord(supplier)">
                 <RiZoomInLine class="web-icons" /> View
               </button>
-              <button class="action-btn edit-btn" @click="editRecord(category)">
+              <button class="action-btn edit-btn" @click="editRecord(supplier)">
                 <RiEditLine size="2rem" class="web-icons" /> Edit
               </button>
               <button
                 class="action-btn delete-btn"
-                @click="openConfirmationDialogbox(category.category_code, category.description)"
+                @click="openConfirmationDialogbox(supplier.id, supplier.s_name)"
               >
                 <RiDeleteBin7Fill class="web-icons" /> Delete
               </button>
@@ -49,12 +65,12 @@
         @page-change="handlePageChange"
         @per-page-change="handlePerPageChange"
       />
-      <FormCategory
+      <FormSupplier
         v-if="isFormVisible"
-        :category="selectedCategory"
+        :supplier="selectedSupplier"
         :mode="formMode"
         @close="closeForm"
-        @refresh="fetchCategories"
+        @refresh="fetchSuppliers"
       />
     </div>
 
@@ -72,7 +88,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import FormCategory from '@/components/FormCategory.vue'
+import FormSupplier from '@/components/FormSupplier.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
@@ -83,34 +99,33 @@ import { RiAddCircleLine, RiEditLine, RiZoomInLine, RiDeleteBin7Fill } from '@re
 
 const { dialogTitle, dialogMessage, dialogId, dialogButtons, dialogVisible } = useDialog()
 
-const openConfirmationDialogbox = (category_code, description) => {
+const openConfirmationDialogbox = (id, sname) => {
   dialogTitle.value = 'Confirm Action'
-  dialogMessage.value =
-    'Are you sure that you want to delete category ' + description + '(' + category_code + ')?'
-  dialogId.value = category_code
+  dialogMessage.value = 'Are you sure that you want to delete supplier  "' + sname + '"?'
+  dialogId.value = id
   dialogButtons.value = ['Yes', 'No']
   dialogVisible.value = true
 }
 
 const { notify } = useNotification()
-const categories = ref([])
+const inventories = ref([])
 const isFormVisible = ref(false)
-const selectedCategory = ref(null)
+const selectedSupplier = ref(null)
 const formMode = ref('entry') // 'entry', 'edit', 'view'
 const authStore = useAuthStore()
 const siteUrl = import.meta.env.VITE_API_URL
 const currentPage = ref(1)
 const limit = ref(10)
 const searchQuery = ref('')
-const sortByField = ref('category_code')
+const sortByField = ref('id')
 const sortDirection = ref('asc')
 
 let totalRecords = ref(0)
 let totalPageCount = ref(1)
 
-const fetchCategories = async () => {
+const fetchSuppliers = async () => {
   try {
-    const response = await axios.get(`${siteUrl}/api/categories/list`, {
+    const response = await axios.get(`${siteUrl}/api/suppliers/list`, {
       params: {
         page: currentPage.value,
         limit: limit.value,
@@ -124,44 +139,44 @@ const fetchCategories = async () => {
       },
       withCredentials: true
     })
-    categories.value = response.data.data
+    inventories.value = response.data.data
     totalRecords.value = response.data.TotalRecords
     totalPageCount.value = Math.ceil(response.data.TotalRecords / limit.value)
   } catch (error) {
-    console.error('Error fetching purchases:', error)
+    console.error('Error fetching suppliers:', error)
   }
 }
 
 const handlePageChange = (pageNumber) => {
   currentPage.value = pageNumber
-  fetchCategories()
+  fetchSuppliers()
 }
 
 const handlePerPageChange = (perPage) => {
   limit.value = perPage
   currentPage.value = 1
-  fetchCategories()
+  fetchSuppliers()
 }
 
 const handleSearchText = (searchText) => {
   searchQuery.value = searchText
-  fetchCategories()
+  fetchSuppliers()
 }
 
 const showAddForm = () => {
-  selectedCategory.value = null
+  selectedSupplier.value = null
   formMode.value = 'entry'
   isFormVisible.value = true
 }
 
-const viewRecord = (category) => {
-  selectedCategory.value = category
+const viewRecord = (supplier) => {
+  selectedSupplier.value = supplier
   formMode.value = 'view'
   isFormVisible.value = true
 }
 
-const editRecord = (category) => {
-  selectedCategory.value = category
+const editRecord = (supplier) => {
+  selectedSupplier.value = supplier
   formMode.value = 'edit'
   isFormVisible.value = true
 }
@@ -174,21 +189,18 @@ const handleAfterDialogConfirm = async (option) => {
   dialogVisible.value = false
   if (option === 'Yes' && dialogId.value) {
     try {
-      const response = await axios.delete(
-        `${siteUrl}/api/categories/delete?code=${dialogId.value}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authStore.token}`
-          }
+      const response = await axios.delete(`${siteUrl}/api/suppliers/delete?id=${dialogId.value}`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`
         }
-      )
+      })
 
       if (response.status === 200) {
-        fetchCategories()
+        fetchSuppliers()
         notify(response.data.message, 'success')
       } else {
         notify(
-          `Failed to delete PO ${dialogId.value}. Server responded with: ${response.status}`,
+          `Failed to delete supplier ${dialogId.value}. Server responded with: ${response.status}`,
           'error'
         )
       }
@@ -213,14 +225,13 @@ const handleAfterDialogConfirm = async (option) => {
   }
 }
 
-onMounted(fetchCategories)
+onMounted(fetchSuppliers)
 </script>
 
 <style scoped lang="scss">
 .container {
   margin-top: 0;
-  padding-left: 5rem;
-  padding-right: 1rem;
+  padding-left: 4rem;
 
   .bar {
     display: flex;
@@ -257,19 +268,19 @@ onMounted(fetchCategories)
     padding: 1rem 2rem;
     font-size: 1.4rem;
     border: none;
-    background-color: #007bff;
+    background-color: var(--active-button-color);
     color: white;
     border-radius: 0.4rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-
-    &:hover {
-      background-color: #0056b3;
-    }
     .web-icons {
       margin-right: 1rem;
       width: 2rem;
       height: 2rem;
+    }
+
+    &:hover {
+      background-color: var(--hover-button-color);
     }
   }
 
@@ -280,7 +291,7 @@ onMounted(fetchCategories)
     width: 100%;
     overflow: auto;
 
-    .list-table {
+    .supplier-table {
       width: 100%;
       border-collapse: collapse;
       text-align: center;

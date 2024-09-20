@@ -59,6 +59,7 @@ import {
   RiShoppingBagFill,
   RiShoppingCart2Fill,
   RiSwap3Fill,
+  RiTruckFill,
   RiTableFill
 } from '@remixicon/vue'
 
@@ -79,6 +80,7 @@ export default {
     RiLogoutBoxRFill,
     RiInformation2Fill,
     RiTableFill,
+    RiTruckFill,
     RiSwap3Fill
   },
   setup() {

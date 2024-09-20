@@ -33,10 +33,10 @@ export const useSuppliersStore = defineStore('suppliers', {
             throw new Error('Data format is not as expected')
           }
         } else {
-          throw new Error('Network response was not ok')
+          throw new Error(`Network response was not ok: ${response.statusText}`)
         }
       } catch (error) {
-        // Log the error and fall back to localStorage
+        // Log the error and set error state
         console.error('Error fetching suppliers from network:', error)
 
         // Load suppliers from localStorage if network fetch fails

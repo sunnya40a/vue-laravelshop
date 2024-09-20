@@ -29,6 +29,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/supplierentry',
+      name: 'Supplier Entry',
+      component: () => import('../views/EntryEditSuppliers.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/ptable',
       name: 'ptable',
       component: () => import('../views/pluginTable.vue'),

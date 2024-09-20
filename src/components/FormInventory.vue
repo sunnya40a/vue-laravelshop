@@ -327,8 +327,22 @@ const submitForm = async () => {
       notify(response.data.message || 'Failed to save purchase', 'error')
     }
   } catch (error) {
-    console.error('Error:', error)
-    notify(error.response?.data?.message || 'An error occurred while saving purchase', 'error')
+    if (error.response) {
+      // Handle specific status codes
+      if (error.response.status >= 400 && error.response.status < 500) {
+        // Notify user with the error message
+        notify(error.response.data.error, 'error')
+      } else if (error.response.status >= 500) {
+        // Handle server errors
+        notify('Server error occurred. Please try again later.', 'error')
+      }
+    } else {
+      // Handle network errors or no response from server
+      notify(
+        'Network or server error occurred. Please check your connection and try again.',
+        'error'
+      )
+    }
   }
 }
 </script>

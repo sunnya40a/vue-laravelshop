@@ -33,6 +33,12 @@ export const useStore = defineStore({
         link: '/itemsentry'
       },
       {
+        title: 'Supplier Entry',
+        icon: 'RiTruckFill',
+        open: false,
+        link: '/supplierentry'
+      },
+      {
         title: 'Table',
         icon: 'RiTableFill',
         open: false,

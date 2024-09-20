@@ -201,12 +201,21 @@ const handleAfterDialogConfirm = async (option) => {
         )
       }
     } catch (error) {
-      if (error.response && error.response.status === 422) {
-        notify(error.response.data.message, 'info')
-      } else if (error.response && error.response.status === 500) {
-        notify(error.response.data.message, 'error')
+      if (error.response) {
+        // Handle specific status codes
+        if (error.response.status >= 400 && error.response.status < 500) {
+          // Notify user with the error message
+          notify(error.response.data.error, 'error')
+        } else if (error.response.status >= 500) {
+          // Handle server errors
+          notify('Server error occurred. Please try again later.', 'error')
+        }
       } else {
-        notify("Couldn't delete record on server. Please try again later.", 'error')
+        // Handle network errors or no response from server
+        notify(
+          'Network or server error occurred. Please check your connection and try again.',
+          'error'
+        )
       }
     }
   }

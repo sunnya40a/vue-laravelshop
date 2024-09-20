@@ -17,6 +17,8 @@ export function LocalCleanup() {
   authStore.setToken('')
   authStore.setTokenreftime(0)
   localStorage.removeItem('userindex', 'True')
+  localStorage.removeItem('itemlists', 'True')
+  localStorage.removeItem('suppliers', 'True')
 }
 
 export function filterString(inputValue) {
