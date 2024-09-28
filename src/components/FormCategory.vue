@@ -17,6 +17,7 @@
               required
               :readonly="mode === 'edit'"
             />
+            <RiLockFill v-if="mode === 'edit'" class="lock-icon" />
           </div>
           <div class="form-group">
             <label for="description">Category:</label>
@@ -61,7 +62,7 @@ import axios from 'axios'
 import { defineProps, defineEmits, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import useNotification from '@/service/notificationService'
-import { RiCloseCircleFill, RiSave3Fill } from '@remixicon/vue'
+import { RiLockFill, RiCloseCircleFill, RiSave3Fill } from '@remixicon/vue'
 
 const props = defineProps({
   category: {
@@ -211,6 +212,15 @@ const submitForm = async () => {
     border: 0.1rem solid #ccc;
     border-radius: 0.4rem;
     background-color: rgb(245, 244, 226);
+  }
+  .lock-icon {
+    position: relative;
+    right: 6rem;
+    top: 1rem;
+    transform: translateY(-75%);
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #6c757d;
   }
 
   input:focus,

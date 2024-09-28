@@ -149,6 +149,7 @@ const fetchSuppliers = async () => {
 
 const handlePageChange = (pageNumber) => {
   currentPage.value = pageNumber
+  console.log(currentPage.value)
   fetchSuppliers()
 }
 
@@ -196,8 +197,11 @@ const handleAfterDialogConfirm = async (option) => {
       })
 
       if (response.status === 200) {
-        fetchSuppliers()
         notify(response.data.message, 'success')
+        if (totalRecords.value % limit.value === 1 && currentPage.value >= 2) {
+          currentPage.value -= 1
+        }
+        fetchSuppliers()
       } else {
         notify(
           `Failed to delete supplier ${dialogId.value}. Server responded with: ${response.status}`,

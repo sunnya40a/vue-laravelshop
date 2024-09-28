@@ -19,6 +19,8 @@ export function LocalCleanup() {
   localStorage.removeItem('userindex', 'True')
   localStorage.removeItem('itemlists', 'True')
   localStorage.removeItem('suppliers', 'True')
+  localStorage.removeItem('categories', 'True')
+  localStorage.removeItem('unitlist', 'True')
 }
 
 export function filterString(inputValue) {

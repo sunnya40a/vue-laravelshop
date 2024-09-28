@@ -192,6 +192,9 @@ const handleAfterDialogConfirm = async (option) => {
       )
 
       if (response.status === 200) {
+        if (totalRecords.value % limit.value === 1 && currentPage.value >= 2) {
+          currentPage.value -= 1
+        }
         fetchPurchases()
         notify(response.data.message, 'success')
       } else {

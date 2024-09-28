@@ -53,7 +53,7 @@
           </div>
 
           <div class="form-group">
-            <label for="supplier_id">Supplier:</label>
+            <!-- <label for="supplier_id">Supplier:</label>
             <div class="autocomplete">
               <input
                 id="supplier_id"
@@ -64,7 +64,7 @@
                 @blur="handleSupplierBlur"
                 placeholder="Search or select a supplier"
                 required
-                :readonly="mode === 'view'"
+                readonly
               />
               <ul v-if="showSupplierList && mode !== 'view'" class="supplier_list">
                 <li
@@ -75,7 +75,15 @@
                   {{ supplier.s_name }}
                 </li>
               </ul>
+            </div> -->
+            <div class="form-group">
+              <label for="supplier_id">Supplier:</label>
+              <div class="autocomplete">
+                <input id="supplier_id" v-model="searchSupplierText" type="text" readonly />
+              </div>
             </div>
+            <!-- <RiLockFill v-if="mode === 'edit'" class="lock-icon" /> -->
+            <RiLockFill class="lock-icon2" />
           </div>
 
           <div class="form-group">
@@ -95,6 +103,7 @@
               @input="updateTotalPrice"
               required
               :readonly="mode === 'view'"
+              ref="qtyInput"
             />
           </div>
           <div class="form-group">
@@ -175,10 +184,6 @@
             <label for="price">Total Price:</label>
             <input id="p_price" v-model="form.p_price" type="number" readonly />
           </div>
-          <!-- <div class="form-group">
-            <label for="paid_status">Paid Status:</label>
-            <input id="paid_status" v-model="form.paid_status" type="number" readonly />
-          </div> -->
           <div class="form-group">
             <label for="payment_status">Payment Status:</label>
             <input id="payment_status" v-model="form.payment_status" type="text" readonly />
@@ -203,6 +208,9 @@ import { useAuthStore } from '@/stores/auth'
 import { useItemlistsStore } from '@/stores/itemlists'
 import useNotification from '@/service/notificationService'
 import { RiLockFill, RiCloseCircleFill, RiSave3Fill } from '@remixicon/vue'
+
+const qtyInput = ref(null) // Declare the ref for the "Qty" input field
+
 const props = defineProps({
   purchase: {
     type: Object,
@@ -243,7 +251,7 @@ const searchItemText = ref('')
 const showItemList = ref(false)
 
 const searchSupplierText = ref('')
-const showSupplierList = ref(false)
+//const showSupplierList = ref(false)
 
 const updateTotalPrice = () => {
   // Calculate total price based on qty and u_price
@@ -267,15 +275,15 @@ const handleItemSearch = () => {
   showItemList.value = true
 }
 
-const handleSupplierSearch = () => {
-  showSupplierList.value = true
-}
+// const handleSupplierSearch = () => {
+//   showSupplierList.value = true
+// }
 
-const handleSupplierBlur = () => {
-  setTimeout(() => {
-    showSupplierList.value = false
-  }, 200)
-}
+// const handleSupplierBlur = () => {
+//   setTimeout(() => {
+//     showSupplierList.value = false
+//   }, 200)
+// }
 
 const handleItemBlur = () => {
   setTimeout(() => {
@@ -291,13 +299,19 @@ const selectItem = (item) => {
   form.value.unit = item.unit
   searchItemText.value = `[${item.item_list}] ${item.description}`
   showItemList.value = false
+
+  // Automatically set supplier details
+  form.value.supplier_id = item.supplier_id
+  searchSupplierText.value = item.s_name
+  // Focus on the "Qty" input
+  qtyInput.value.focus()
 }
 
-const selectSupplier = (supplier) => {
-  form.value.supplier_id = supplier.id
-  searchSupplierText.value = supplier.s_name
-  showSupplierList.value = false
-}
+// const selectSupplier = (supplier) => {
+//   form.value.supplier_id = supplier.id
+//   searchSupplierText.value = supplier.s_name
+//   showSupplierList.value = false
+// }
 
 const filteredItems = computed(() => {
   const search = searchItemText.value.toLowerCase()
@@ -308,13 +322,13 @@ const filteredItems = computed(() => {
   )
 })
 
-const filteredSuppliers = computed(() => {
-  if (!suppliersStore.suppliers) return []
-  const search = searchSupplierText.value.toLowerCase()
-  return suppliersStore.suppliers.filter((supplier) =>
-    supplier.s_name.toLowerCase().includes(search)
-  )
-})
+// const filteredSuppliers = computed(() => {
+//   if (!suppliersStore.suppliers) return []
+//   const search = searchSupplierText.value.toLowerCase()
+//   return suppliersStore.suppliers.filter((supplier) =>
+//     supplier.s_name.toLowerCase().includes(search)
+//   )
+// })
 
 const emit = defineEmits(['close', 'refresh'])
 
